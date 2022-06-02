@@ -6,15 +6,20 @@ module rv32_ctrl(
 
 // definitions
 
-wire [31:0] iaddr, idataout, drdaddr, dwraddr, ddataout, ddatain, PC;
+wire [31:0] iaddr, idataout, drdaddr, dwraddr, ddataout, ddata, ddatain, PC;
 wire [2:0] dop;
-wire iclk, drdclk, dwrclk, dwe, datawe; // dwe 是CPU输出结果, datawe 是向dmem中输入信号
+wire iclk, drdclk, dwrclk;
+wire cpu_we, data_we, vga_we;
 
 assign debugdata = PC;
-assign datawe=(dwraddr[31:20]==12'h001)? dwe:1'b0; // 比较地址, 确定写使能.
-assign ddata=(drdaddr[31:20]==12'h001)? ddataout: // 选取dmem输出
-            ((drdaddr[31:20]==12'h003)? keymemout :32'b0 ); // 键盘输出
-		
+
+// instr: 000, data: 001, vga: 002, ps2: 003, ...
+assign data_we	=(dwraddr[31:20] == 12'h001)? cpu_we : 1'b0;
+assign vga_we	=(dwraddr[31:20] == 12'h002)? cpu_we : 1'b0;
+
+assign cpu_data=(drdaddr[31:20] == 12'h001)? ddataout: // 选取dmem输出
+					((drdaddr[31:20] == 12'h003)? keymemout : 32'b0 ); // 键盘输出
+				
 // CPU
 				
 rv32is my_rv32is(
@@ -24,12 +29,12 @@ rv32is my_rv32is(
 	.imemdataout(idataout),
 	.imemclk(iclk),
 	.dmemaddr(daddr),
-	.dmemdataout(ddataout),
+	.dmemdataout(cpu_data),
 	.dmemdatain(ddatain),
 	.dmemrdclk(drdclk),
 	.dmemwrclk(dwrclk),
 	.dmemop(dop),
-	.dmemwe(dwe),
+	.dmemwe(cpuwe),
 	.dbgdata(PC)
 );
 
@@ -43,16 +48,16 @@ dmem datamem(
 	.rdclk(drdclk),
 	.wrclk(dwrclk),
 	.memop(dop),
-	.we(datawe)
+	.we(data_we)
 );
 
 
 // imem				
 				
 imem my_imem(
-	.addr(imemaddr),
-	.rdclk(imemclk),
-	.dataout(imemdataout)
+	.addr(iaddr),
+	.rdclk(iclk),
+	.dataout(idataout)
 );
 
 // vga and ps2 to be done...
