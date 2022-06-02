@@ -4,36 +4,37 @@ module rv32_ctrl(
 	output [31:0] debugdata
 );
 
-wire [31:0] imemaddr, imemdataout, dmemaddr, dmemdataout, dmemdatain, PC;
-wire [2:0] dmemop;
-wire imemclk, dmemrdclk, dmemwrclk, dmemwe;
+wire [31:0] iaddr, idataout, drdaddr, dwraddr, ddataout, ddatain, PC;
+wire [2:0] dop;
+wire iclk, drdclk, dwrclk, datawe;
 
 assign debugdata = PC;
 
 rv32is my_rv32is(
 	.clock(clock),
 	.reset(reset),
-	.imemaddr(imemaddr),
-	.imemdataout(imemdataout),
-	.imemclk(imemclk),
-	.dmemaddr(dmemaddr),
-	.dmemdataout(dmemdataout),
-	.dmemdatain(dmemdatain),
-	.dmemrdclk(dmemrdclk),
-	.dmemwrclk(dmemwrclk),
-	.dmemop(dmemop),
-	.dmemwe(dmemwe),
+	.imemaddr(iaddr),
+	.imemdataout(idataout),
+	.imemclk(iclk),
+	.dmemaddr(daddr),
+	.dmemdataout(ddataout),
+	.dmemdatain(ddatain),
+	.dmemrdclk(drdclk),
+	.dmemwrclk(dwrclk),
+	.dmemop(dop),
+	.dmemwe(datawe),
 	.dbgdata(PC)
 );
 
-dmem my_dmem(
-	.addr(dmemaddr),
-	.dataout(dmemdataout),
-	.datain(dmemdatain),
-	.rdclk(dmemrdclk),
-	.wrclk(dmemwrclk),
-	.memop(dmemop),
-	.we(dmemwe)
+dmem datamem(
+	.rdaddr(drdaddr),
+	.dataout(ddataout),
+	.wraddr(dwraddr),
+	.datain(ddatain),
+	.rdclk(drdclk),
+	.wrclk(dwrclk),
+	.memop(dop),
+	.we(datawe)
 );
 
 imem my_imem(
