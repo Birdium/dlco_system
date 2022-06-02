@@ -7,6 +7,7 @@ module rv32_ctrl(
 // definitions
 
 wire [31:0] iaddr, idataout, drdaddr, dwraddr, ddataout, ddata, ddatain, PC;
+wire [31:0] keymemout;
 wire [2:0] dop;
 wire iclk, drdclk, dwrclk;
 wire cpu_we, data_we, vga_we;
