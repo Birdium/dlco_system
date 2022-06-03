@@ -3,7 +3,8 @@ module displayer(
 	input [9:0] h_addr, v_addr,
 	input [7:0] ascii,
 	output reg [11:0] data, 
-	output [11:0] vrdaddr
+	output [11:0] vrdaddr,
+	output vrdclk
 );
 
 reg [11:0] vga_font [4095:0];
@@ -25,6 +26,7 @@ end
 assign scan_x = h_addr / 9;
 assign scan_y = v_addr / 16;
 assign vrdaddr = {scan_y[5:0], scan_x[5:0]};
+assign vrdclk = clk;
 assign ch_x = h_addr % 9;
 assign ch_y = {ascii, v_addr[3:0]};
 assign line = vga_font[ch_y];

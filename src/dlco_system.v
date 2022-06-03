@@ -108,10 +108,13 @@ assign vga_we	=(daddr[31:20] == 12'h002)? cpu_we : 1'b0;
 assign cpu_data	=(daddr[31:20] == 12'h001)? ddataout: // 选取dmem输出
 				((daddr[31:20] == 12'h003)? keymemout : 32'b0 ); // 键盘输出
 
-// VGA
+// VGA + vmem
 reg [11:0] vga_data;
 wire [9:0] h_addr, v_addr;
 wire [3:0] vga_r, vga_g, vga_b;
+
+wire [7:0] vdataout;
+wire [11:0] vrdaddr;
 
 // KBD
 wire [7:0] scancode, asciicode;
@@ -150,10 +153,11 @@ rv32is my_rv32is( // in out 是相对于rv32is来说的
 	.dbgdata(PC)
 );
 
-// dmem
-
-dmem_ctrl my_dmem(
-	.addr(daddr),
+// dmem: [0x00100000, 0x0011ffff)
+// 和exp11类似,, 只不过这里的data_we要转换成特定模块的we
+// dmem 分配了 2^17 Byte的空间, 提供的地址应当是17bit的, 输出则是32bit的, 怎么取值和memop相关
+dmem_ctrl my_dmem_ctrl(
+	.addr(daddr[16:0]),
 	.dataout(ddataout),
 	.datain(ddatain),
 	.rdclk(drdclk),
@@ -163,18 +167,19 @@ dmem_ctrl my_dmem(
 );
 
 
-// imem
+// imem: [0x00000000, 0x0001ffff)
+// imem 分配了 2^15 * 4Byte的空间, 因为rv32的缘故, 指令是定长的, 只需要提供15bit的地址信息, 
 
 imem my_imem(
-	.address(iaddr[15:2]),
+	.address(iaddr[16:2]),
 	.clock(iclk),
 	.q(idataout)
 );
 
-wire [7:0] vdataout;
-wire [11:0] vrdaddr;
-// vga
-// 显存的想法: [0x00200000-0x00201000), 64*64*8bit. 此外0x00201000映射到起始行号寄存器, 0x00201001颜色寄存器...
+// vga: [0x00200000, 0x00201000)
+// 显存大小为 64*64 Byte. 
+// TBD: 此外可以将0x00201000映射到起始行号寄存器, 0x00201001颜色寄存器...
+// 
 vmem my_vmem(
 	.data(cpu_data[7:0]),
 	.rdaddress(vrdaddr), // VGA 读
@@ -196,6 +201,7 @@ displayer my_displayer(
 	.h_addr(h_addr),
 	.v_addr(v_addr),
 	.data(vga_data),
+	.vrdclk(vrdclk), // let VGA tell vmem when to read
 	.vrdaddr(vrdaddr)
 );
 
@@ -213,12 +219,16 @@ vga_ctrl vga_inst(
 	.vga_b(vga_b)
 );
 
+//wire [7:0] tmp1, tmp2;
+
 // ps2
 keyboard my_key(
 	.clk(kbdclk),
 	.clrn(kdbrst),
 	.ps2_clk(PS2_CLK),
 	.ps2_data(PS2_DAT),
+//	.cur_key(tmp1),
+//	.ascii_key(tmp2)
 	.cur_key(scancode),
 	.ascii_key(asciicode)
 );
