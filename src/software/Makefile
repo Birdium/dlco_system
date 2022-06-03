@@ -25,6 +25,10 @@ SRCS := $(wildcard  *.c)
 OBJS := $(SRCS:.c=.o)
 EXEC := main
 
+SOFTWARE_PATH := $(shell pwd)
+SRC_PATH := $(SOFTWARE_PATH)/..
+MEM_PATH := $(SRC_PATH)/mem
+
 .c.o:
 	$(RISCV_GCC) -c $(RISCV_GCC_OPTS)  $< -o $@
 
@@ -42,6 +46,8 @@ ${EXEC}.hex: ${EXEC}.tmp
 ${EXEC}.mif: ${EXEC}.hex
 	awk -v depth=65536 ${RISCV_MIFGEN} $< > $@
 	awk -v depth=32768 ${RISCV_MIFGEN} ${EXEC}_d.hex > ${EXEC}_d.mif
+	cp ${EXEC}.mif ${MEM_PATH}/imem.mif
+	cp ${EXEC}_d.mif ${MEM_PATH}/dmem.mif
 
 .PHONY: all clean
 
