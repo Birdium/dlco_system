@@ -191,7 +191,7 @@ assign VGA_B = {vga_b, 4'b0};
 assign VGA_SYNC_N = 0;
 
 displayer my_displayer(
-	.clk(clk),
+	.clk(vgaclk),
 	.ascii(vdataout), // read from vmem
 	.h_addr(h_addr),
 	.v_addr(v_addr),
