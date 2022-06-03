@@ -113,6 +113,19 @@ reg [11:0] vga_data;
 wire [9:0] h_addr, v_addr;
 wire [3:0] vga_r, vga_g, vga_b;
 
+// KBD
+wire [7:0] scancode, asciicode;
+
+// CLK
+wire clk, cpuclk, vgaclk, kbdclk;
+
+// reset
+wire cpurst, vgarst, kdbrst;
+assign cpurst = SW[0];
+assign vgarst = SW[1];
+assign kbdrst = SW[2];
+// assign cpurst = SW[3];
+// assign cpurst = SW[4];
 
 //=======================================================
 //  Structural coding
@@ -122,8 +135,8 @@ wire [3:0] vga_r, vga_g, vga_b;
 // CPU
 				
 rv32is my_rv32is( // in out 是相对于rv32is来说的
-	.clock(clock),
-	.reset(reset),
+	.clock(cpuclk),
+	.reset(rst),
 	.imemaddr(iaddr),
 	.imemdataout(idataout),
 	.imemclk(iclk),
@@ -139,7 +152,7 @@ rv32is my_rv32is( // in out 是相对于rv32is来说的
 
 // dmem
 
-dmem my_dmem(
+dmem_ctrl my_dmem(
 	.addr(daddr),
 	.dataout(ddataout),
 	.datain(ddatain),
@@ -153,9 +166,9 @@ dmem my_dmem(
 // imem
 
 imem my_imem(
-	.addr(iaddr[15:2]),
-	.rdclk(iclk),
-	.dataout(idataout)
+	.address(iaddr[15:2]),
+	.clock(iclk),
+	.q(idataout)
 );
 
 wire [7:0] vdataout;
@@ -164,9 +177,9 @@ wire [11:0] vrdaddr;
 // 显存的想法: [0x00200000-0x00201000), 64*64*8bit. 此外0x00201000映射到起始行号寄存器, 0x00201001颜色寄存器...
 vmem my_vmem(
 	.data(cpu_data[7:0]),
-	.rdaddress(vrdaddr),
+	.rdaddress(vrdaddr), // VGA 读
 	.rdclock(vrdclk),
-	.wraddress(daddr[11:0]),
+	.wraddress(daddr[11:0]), // cpu 写
 	.wrclock(dwrclk),
 	.wren(vga_we),
 	.q(vdataout)
@@ -179,7 +192,7 @@ assign VGA_SYNC_N = 0;
 
 displayer my_displayer(
 	.clk(clk),
-	.ascii(vdataout),
+	.ascii(vdataout), // read from vmem
 	.h_addr(h_addr),
 	.v_addr(v_addr),
 	.data(vga_data),
@@ -200,6 +213,25 @@ vga_ctrl vga_inst(
 	.vga_b(vga_b)
 );
 
-// ps2 to be done...
+// ps2
+keyboard my_key(
+	.clk(kbdclk),
+	.clrn(kdbrst),
+	.ps2_clk(PS2_CLK),
+	.ps2_data(PS2_DAT),
+	.cur_key(scancode),
+	.ascii_key(asciicode)
+);
+
+// CLK
+clkgen #(25000000) my_clk(
+	.clkin(CLOCK_50),
+	.clken(1'b1),
+	.clkout(clk)
+);
+
+assign cpuclk = clk;
+assign vgaclk = clk;
+assign kbdclk = clk;
 
 endmodule
