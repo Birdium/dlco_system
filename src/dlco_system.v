@@ -99,8 +99,6 @@ wire [2:0] dop;
 wire iclk, drdclk, dwrclk;
 wire cpu_we, data_we, vga_we;
 
-assign debugdata = PC;
-
 // instr: 000, data: 001, vga: 002, ps2: 003, ...
 assign data_we	=(daddr[31:20] == 12'h001)? cpu_we : 1'b0;
 assign vga_we	=(daddr[31:20] == 12'h002)? cpu_we : 1'b0;
@@ -120,10 +118,10 @@ wire [11:0] vrdaddr;
 wire [7:0] scancode, asciicode;
 
 // CLK
-wire clk, cpuclk, vgaclk, kbdclk;
+wire clk, cpuclk, vgaclk, kbdclk, vrdclk;
 
 // reset
-wire cpurst, vgarst, kdbrst;
+wire cpurst, vgarst, kbdrst;
 assign cpurst = SW[0];
 assign vgarst = SW[1];
 assign kbdrst = SW[2];
@@ -139,7 +137,7 @@ assign kbdrst = SW[2];
 				
 rv32is my_rv32is( // in out 是相对于rv32is来说的
 	.clock(cpuclk),
-	.reset(rst),
+	.reset(cpurst),
 	.imemaddr(iaddr),
 	.imemdataout(idataout),
 	.imemclk(iclk),
@@ -224,7 +222,7 @@ vga_ctrl vga_inst(
 // ps2
 keyboard my_key(
 	.clk(kbdclk),
-	.clrn(kdbrst),
+	.clrn(kbdrst),
 	.ps2_clk(PS2_CLK),
 	.ps2_data(PS2_DAT),
 //	.cur_key(tmp1),
