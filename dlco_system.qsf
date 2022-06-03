@@ -410,6 +410,9 @@ set_global_assignment -name VERILOG_FILE src/dlco_system.v
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name QIP_FILE vmem.qip
+set_global_assignment -name SEARCH_PATH src/mem
+set_global_assignment -name SEARCH_PATH src/clk
 set_global_assignment -name SEARCH_PATH src/vga
 set_global_assignment -name SEARCH_PATH src/ps2
 set_global_assignment -name SEARCH_PATH src/misc

@@ -93,7 +93,25 @@ module dlco_system(
 //  REG/WIRE declarations
 //=======================================================
 
-wire [31:0] PC;
+wire [31:0] iaddr, idataout, daddr, ddataout, ddata, ddatain, cpu_data, PC;
+wire [31:0] keymemout;
+wire [2:0] dop;
+wire iclk, drdclk, dwrclk;
+wire cpu_we, data_we, vga_we;
+
+assign debugdata = PC;
+
+// instr: 000, data: 001, vga: 002, ps2: 003, ...
+assign data_we	=(daddr[31:20] == 12'h001)? cpu_we : 1'b0;
+assign vga_we	=(daddr[31:20] == 12'h002)? cpu_we : 1'b0;
+
+assign cpu_data	=(daddr[31:20] == 12'h001)? ddataout: // 选取dmem输出
+				((daddr[31:20] == 12'h003)? keymemout : 32'b0 ); // 键盘输出
+
+// VGA
+reg [11:0] vga_data;
+wire [9:0] h_addr, v_addr;
+wire [3:0] vga_r, vga_g, vga_b;
 
 
 //=======================================================
@@ -101,20 +119,87 @@ wire [31:0] PC;
 //=======================================================
 
 
-
-rv32_ctrl my_rv32_ctrl(
-	.clock(KEY[1]),
-	.reset(KEY[0]),
-	.debugdata(PC)
+// CPU
+				
+rv32is my_rv32is( // in out 是相对于rv32is来说的
+	.clock(clock),
+	.reset(reset),
+	.imemaddr(iaddr),
+	.imemdataout(idataout),
+	.imemclk(iclk),
+	.dmemaddr(daddr), 
+	.dmemdataout(cpu_data), // 给 CPU 的数据
+	.dmemdatain(ddatain), // CPU 给的
+	.dmemrdclk(drdclk),
+	.dmemwrclk(dwrclk),
+	.dmemop(dop),
+	.dmemwe(cpu_we),
+	.dbgdata(PC)
 );
 
-bcd7seg seg0(PC[3:0], HEX0);
-bcd7seg seg1(PC[7:4], HEX1);
-bcd7seg seg2(PC[11:8], HEX2);
-bcd7seg seg3(PC[15:12], HEX3);
-bcd7seg seg4(PC[19:16], HEX4);
-bcd7seg seg5(PC[23:20], HEX5);
+// dmem
+
+dmem my_dmem(
+	.addr(daddr),
+	.dataout(ddataout),
+	.datain(ddatain),
+	.rdclk(drdclk),
+	.wrclk(dwrclk),
+	.memop(dop),
+	.we(data_we)
+);
 
 
+// imem
+
+imem my_imem(
+	.addr(iaddr[15:2]),
+	.rdclk(iclk),
+	.dataout(idataout)
+);
+
+wire [7:0] vdataout;
+wire [11:0] vrdaddr;
+// vga
+// 显存的想法: [0x00200000-0x00201000), 64*64*8bit. 此外0x00201000映射到起始行号寄存器, 0x00201001颜色寄存器...
+vmem my_vmem(
+	.data(cpu_data[7:0]),
+	.rdaddress(vrdaddr),
+	.rdclock(vrdclk),
+	.wraddress(daddr[11:0]),
+	.wrclock(dwrclk),
+	.wren(vga_we),
+	.q(vdataout)
+);
+
+assign VGA_R = {vga_r, 4'b0};
+assign VGA_G = {vga_g, 4'b0};
+assign VGA_B = {vga_b, 4'b0};
+assign VGA_SYNC_N = 0;
+
+displayer my_displayer(
+	.clk(clk),
+	.ascii(vdataout),
+	.h_addr(h_addr),
+	.v_addr(v_addr),
+	.data(vga_data),
+	.vrdaddr(vrdaddr)
+);
+
+vga_ctrl vga_inst(
+	.pclk(VGA_CLK),
+	.reset(1'b0),
+	.vga_data(vga_data),
+	.h_addr(h_addr),
+	.v_addr(v_addr),
+	.hsync(VGA_HS),
+	.vsync(VGA_VS),
+	.valid(VGA_BLANK_N),
+	.vga_r(vga_r),
+	.vga_g(vga_g),
+	.vga_b(vga_b)
+);
+
+// ps2 to be done...
 
 endmodule

@@ -1,41 +1,32 @@
 module displayer(
-	input clk, ctrl, shift, caps, alt, en, is_dir,
+	input clk,
 	input [9:0] h_addr, v_addr,
-	input [7:0] w_ascii,
-	output reg [11:0] data
+	input [7:0] ascii,
+	output reg [11:0] data, 
+	output [11:0] vrdaddr
 );
 
-reg [7:0] chars [0:29][0:69];
 reg [11:0] vga_font [4095:0];
 reg flash_on;
 
 wire [9:0] scan_x, scan_y;
 wire [3:0] ch_x;
 wire [11:0] ch_y, line;
-
 reg [6:0] cur_x, cur_y;
-wire [7:0] r_ascii;
-integer i, j;
 
 initial
 begin
-	for (i = 0; i < 30; i = i+1)
-		for (j = 0; j < 70; j = j+1)
-			chars[i][j] = 8'h0;
 	$readmemh("vga_font.txt", vga_font, 0, 4095);
-	chars[0][0] = 8'h3E;
-	chars[0][1] = 8'h00;
-	cur_x = 7'h2;
-	cur_y = 7'h0;
 	flash_on = 0;
-	data = 0;
+	cur_x = 7'h2;
+	cur_y = 7'h0; // 可能还需要一个寄存器来指示光标位置
 end
 
 assign scan_x = h_addr / 9;
 assign scan_y = v_addr / 16;
-assign r_ascii = h_addr < 10'd630 ? chars[scan_y][scan_x] : 8'b0;
+assign vrdaddr = {scan_y[5:0], scan_x[5:0]};
 assign ch_x = h_addr % 9;
-assign ch_y = {r_ascii[7:0], v_addr[3:0]};
+assign ch_y = {ascii, v_addr[3:0]};
 assign line = vga_font[ch_y];
 
 cursor my_cursor(clk, flash_on);

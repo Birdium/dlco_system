@@ -1,5 +1,5 @@
 module imem(
-	input  [31:0] addr,
+	input  [13:0] addr,
 	input  rdclk,
 	output reg [31:0] dataout
 );
