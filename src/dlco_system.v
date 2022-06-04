@@ -121,12 +121,8 @@ wire [7:0] scancode, asciicode;
 wire clk, cpuclk, vgaclk, kbdclk, vrdclk;
 
 // reset
-wire cpurst, vgarst, kbdrst;
-assign cpurst = SW[0];
-assign vgarst = SW[1];
-assign kbdrst = SW[2];
-// assign cpurst = SW[3];
-// assign cpurst = SW[4];
+wire rst;
+assign rst = SW[0];
 
 //=======================================================
 //  Structural coding
@@ -134,10 +130,11 @@ assign kbdrst = SW[2];
 
 
 // CPU
+// 下降沿写, 上升沿读
 				
 rv32is my_rv32is( // in out 是相对于rv32is来说的
 	.clock(cpuclk),
-	.reset(cpurst),
+	.reset(rst),
 	.imemaddr(iaddr),
 	.imemdataout(idataout),
 	.imemclk(iclk),
@@ -177,7 +174,8 @@ imem my_imem(
 // vga: [0x00200000, 0x00201000)
 // 显存大小为 64*64 Byte. 
 // TBD: 此外可以将0x00201000映射到起始行号寄存器, 0x00201001颜色寄存器...
-// 
+// 上升沿cpu写, 下降沿vga读
+
 vmem my_vmem(
 	.data(ddatain[7:0]),
 	.rdaddress(vrdaddr), // VGA 读
@@ -194,6 +192,8 @@ assign VGA_B = {vga_b, 4'b0};
 assign VGA_SYNC_N = 0;
 assign VGA_CLK = vgaclk;
 
+// 非常恐怖啊, 时序问题,,,
+// vgaclk=clk, 在整个时钟周期下降沿displayer会从vmem读入vdataout, 在上升沿输出到vga_data.
 displayer my_displayer(
 	.clk(vgaclk),
 	.ascii(vdataout), // read from vmem
@@ -206,7 +206,7 @@ displayer my_displayer(
 
 vga_ctrl vga_inst(
 	.pclk(vgaclk),
-	.reset(1'b0),
+	.reset(rst),
 	.vga_data(vga_data),
 	.h_addr(h_addr),
 	.v_addr(v_addr),
@@ -223,7 +223,7 @@ vga_ctrl vga_inst(
 // ps2
 keyboard my_key(
 	.clk(kbdclk),
-	.clrn(kbdrst),
+	.clrn(rst),
 	.ps2_clk(PS2_CLK),
 	.ps2_data(PS2_DAT),
 //	.cur_key(tmp1),
