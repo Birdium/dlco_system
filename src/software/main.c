@@ -16,6 +16,7 @@ int main()
     putstr(hello);
     putstr(nyan);
     putstr(nunhehheh);
+    putstr(nyan);
     while (1)
     {
     };
