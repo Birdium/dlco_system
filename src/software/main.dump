@@ -183,7 +183,7 @@ Disassembly of section .text:
  294:	da478793          	addi	a5,a5,-604 # 100034 <vga_start>
  298:	0007a783          	lw	a5,0(a5)
  29c:	fec42703          	lw	a4,-20(s0)
- 2a0:	00671693          	slli	a3,a4,0x6
+ 2a0:	00771693          	slli	a3,a4,0x7
  2a4:	fe842703          	lw	a4,-24(s0)
  2a8:	00e68733          	add	a4,a3,a4
  2ac:	00e787b3          	add	a5,a5,a4
@@ -192,7 +192,7 @@ Disassembly of section .text:
  2b8:	00178793          	addi	a5,a5,1
  2bc:	fef42423          	sw	a5,-24(s0)
  2c0:	fe842703          	lw	a4,-24(s0)
- 2c4:	03f00793          	li	a5,63
+ 2c4:	04500793          	li	a5,69
  2c8:	fce7d4e3          	bge	a5,a4,290 <vga_init+0x34>
  2cc:	fec42783          	lw	a5,-20(s0)
  2d0:	00178793          	addi	a5,a5,1
@@ -218,7 +218,7 @@ Disassembly of section .text:
  318:	0007a783          	lw	a5,0(a5)
  31c:	fec42703          	lw	a4,-20(s0)
  320:	00170713          	addi	a4,a4,1
- 324:	00671693          	slli	a3,a4,0x6
+ 324:	00771693          	slli	a3,a4,0x7
  328:	fe842703          	lw	a4,-24(s0)
  32c:	00e68733          	add	a4,a3,a4
  330:	00e78733          	add	a4,a5,a4
@@ -226,7 +226,7 @@ Disassembly of section .text:
  338:	d0078793          	addi	a5,a5,-768 # 100034 <vga_start>
  33c:	0007a783          	lw	a5,0(a5)
  340:	fec42683          	lw	a3,-20(s0)
- 344:	00669613          	slli	a2,a3,0x6
+ 344:	00769613          	slli	a2,a3,0x7
  348:	fe842683          	lw	a3,-24(s0)
  34c:	00d606b3          	add	a3,a2,a3
  350:	00d787b3          	add	a5,a5,a3
@@ -236,7 +236,7 @@ Disassembly of section .text:
  360:	00178793          	addi	a5,a5,1
  364:	fef42423          	sw	a5,-24(s0)
  368:	fe842703          	lw	a4,-24(s0)
- 36c:	03f00793          	li	a5,63
+ 36c:	04500793          	li	a5,69
  370:	fae7d0e3          	bge	a5,a4,310 <vga_roll+0x1c>
  374:	fec42783          	lw	a5,-20(s0)
  378:	00178793          	addi	a5,a5,1
@@ -276,7 +276,7 @@ Disassembly of section .text:
  3f8:	00100717          	auipc	a4,0x100
  3fc:	c4070713          	addi	a4,a4,-960 # 100038 <vga_line>
  400:	00072703          	lw	a4,0(a4)
- 404:	00671693          	slli	a3,a4,0x6
+ 404:	00771693          	slli	a3,a4,0x7
  408:	00100717          	auipc	a4,0x100
  40c:	c3470713          	addi	a4,a4,-972 # 10003c <vga_ch>
  410:	00072703          	lw	a4,0(a4)
@@ -296,7 +296,7 @@ Disassembly of section .text:
  448:	00e7a023          	sw	a4,0(a5)
  44c:	00100797          	auipc	a5,0x100
  450:	bf078793          	addi	a5,a5,-1040 # 10003c <vga_ch>
- 454:	03f00713          	li	a4,63
+ 454:	04500713          	li	a4,69
  458:	00e7a023          	sw	a4,0(a5)
  45c:	1140006f          	j	570 <putch+0x1d4>
  460:	00100797          	auipc	a5,0x100
@@ -330,7 +330,7 @@ Disassembly of section .text:
  4d0:	00100717          	auipc	a4,0x100
  4d4:	b6870713          	addi	a4,a4,-1176 # 100038 <vga_line>
  4d8:	00072703          	lw	a4,0(a4)
- 4dc:	00671693          	slli	a3,a4,0x6
+ 4dc:	00771693          	slli	a3,a4,0x7
  4e0:	00100717          	auipc	a4,0x100
  4e4:	b5c70713          	addi	a4,a4,-1188 # 10003c <vga_ch>
  4e8:	00072703          	lw	a4,0(a4)
@@ -348,7 +348,7 @@ Disassembly of section .text:
  518:	00100797          	auipc	a5,0x100
  51c:	b2478793          	addi	a5,a5,-1244 # 10003c <vga_ch>
  520:	0007a703          	lw	a4,0(a5)
- 524:	03f00793          	li	a5,63
+ 524:	04500793          	li	a5,69
  528:	04e7d863          	bge	a5,a4,578 <putch+0x1dc>
  52c:	00100797          	auipc	a5,0x100
  530:	b0c78793          	addi	a5,a5,-1268 # 100038 <vga_line>
@@ -425,8 +425,7 @@ Disassembly of section .data:
   100022:	6861                	lui	a6,0x18
   100024:	6868                	flw	fa0,84(s0)
   100026:	0a21                	addi	s4,s4,8
-  100028:	00              	Address 0x0000000000100028 is out of bounds.
-
+  100028:	0000                	unimp
 
 Disassembly of section .sdata:
 
