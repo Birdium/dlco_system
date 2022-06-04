@@ -26,7 +26,8 @@ end
 assign scan_x = h_addr / 9;
 assign scan_y = v_addr / 16;
 assign vrdaddr = {scan_y[5:0], scan_x[5:0]};
-assign vrdclk = clk;
+
+assign vrdclk = ~clk;
 assign ch_x = h_addr % 9;
 assign ch_y = {ascii, v_addr[3:0]};
 assign line = vga_font[ch_y];

@@ -179,7 +179,7 @@ imem my_imem(
 // TBD: 此外可以将0x00201000映射到起始行号寄存器, 0x00201001颜色寄存器...
 // 
 vmem my_vmem(
-	.data(cpu_data[7:0]),
+	.data(ddatain[7:0]),
 	.rdaddress(vrdaddr), // VGA 读
 	.rdclock(vrdclk),
 	.wraddress(daddr[11:0]), // cpu 写
@@ -192,6 +192,7 @@ assign VGA_R = {vga_r, 4'b0};
 assign VGA_G = {vga_g, 4'b0};
 assign VGA_B = {vga_b, 4'b0};
 assign VGA_SYNC_N = 0;
+assign VGA_CLK = vgaclk;
 
 displayer my_displayer(
 	.clk(vgaclk),
@@ -204,7 +205,7 @@ displayer my_displayer(
 );
 
 vga_ctrl vga_inst(
-	.pclk(VGA_CLK),
+	.pclk(vgaclk),
 	.reset(1'b0),
 	.vga_data(vga_data),
 	.h_addr(h_addr),
@@ -237,9 +238,10 @@ clkgen #(25000000) my_clk(
 	.clken(1'b1),
 	.clkout(clk)
 );
+assign LEDR = PC[11:2];
 
 assign cpuclk = clk;
 assign vgaclk = clk;
-assign kbdclk = clk;
+assign kbdclk = ~clk;
 
 endmodule
