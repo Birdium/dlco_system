@@ -1,7 +1,7 @@
 #include "sys.h"
-char hello[]="Hello World!\n";
-char nyan[]="Nyan!\n";
-char nunhehheh[]="Nunhehhehaaaaaaaaaahhh!\n";
+char hello[]="Hello World!\n\0";
+char nyan[]="Nyan!\n\0";
+char nunhehheh[]="Nunhehhehaaaaaaaaaahhh!\n\0";
 int main();
 //setup the entry point
 void entry()

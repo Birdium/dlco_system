@@ -1,6 +1,6 @@
 #include "sys.h"
 
-#define VGA_CUR vga_start[(vga_line << 6) + vga_ch]
+#define VGA_CUR vga_start[(vga_line << 7) + vga_ch]
 
 #define BACKSPACE 8
 #define ENTER 10
@@ -14,13 +14,13 @@ void vga_init(){
     vga_ch =0;
     for(int i=0;i<VGA_MAXLINE;i++)
         for(int j=0;j<VGA_MAXCOL;j++)
-            vga_start[ (i<<6)+j ] =0;
+            vga_start[ (i<<7)+j ] =0;
 }
 
 void vga_roll(){
     for(int i=0;i<VGA_MAXLINE-1;i++)
         for(int j=0;j<VGA_MAXCOL;j++)
-            vga_start[ (i<<6)+j ] = vga_start[ ((i+1)<<6)+j ];
+            vga_start[ (i<<7)+j ] = vga_start[ ((i+1)<<7)+j ];
 }
 
 void putch(char ch) {
