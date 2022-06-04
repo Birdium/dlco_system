@@ -5,8 +5,6 @@ JedecChain;
 
 	P ActionCode(Ign)
 		Device PartName(SOCVHPS) MfrSpec(OpMask(0));
-	P ActionCode(Cfg)
-		Device PartName(5CSXFC6D6F31) Path("C:/Users/Birdium/dlco_system/") File("dlco_system.sof") MfrSpec(OpMask(1));
 
 ChainEnd;
 
