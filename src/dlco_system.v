@@ -231,7 +231,7 @@ end
 
 always @(negedge drdclk) begin
 	if (nextdata_n == 1'b0) nextdata_n <= 1'b1;
-	else if (ready && ) nextdata_n <= 1'b0;
+	else if (ready) nextdata_n <= 1'b0;
 	else nextdata_n <= 1'b1;
 end
 
@@ -247,14 +247,14 @@ ps2_keyboard kbd_inst(
 );
 
 kfifo my_fifo(
-	.data(keydata);
-	.rdclk(cpuclk);
-	.rdreq(key_rd);
-	.wrclk(kbdclk);
-	.wrreq(ready);
-	.q(kfifodata);
-	.rdempty(rdempty);
-	.wrfull(wrfull);
+	.data(keydata),
+	.rdclk(drdclk),
+	.rdreq(key_rd),
+	.wrclk(kbdclk),
+	.wrreq(ready),
+	.q(kfifodata),
+	.rdempty(rdempty),
+	.wrfull(wrfull)
 );
 
 assign keymemdata = rdempty ? 8'b0 : kfifodata;
