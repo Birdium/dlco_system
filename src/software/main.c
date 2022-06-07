@@ -35,8 +35,10 @@ int main()
         int cnt = 0;
         while(cnt < 2500000) cnt ++;
         putstr(hello);
+        cnt = 0;
         while(cnt < 2500000) cnt ++;
         putstr(nyan);
+        cnt = 0;
         while(cnt < 2500000) cnt ++;
         putstr(nunhehheh);
     };
