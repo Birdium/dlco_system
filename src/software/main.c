@@ -32,7 +32,8 @@ int main()
     putstr(nunhehheh);
     while (1)
     {
-        while(100000000) ;
+        int cnt = 0;
+        while(cnt < 250000000) cnt ++;
         putstr(hello);
         putstr(nyan);
         putstr(nunhehheh);
