@@ -71,8 +71,8 @@ Disassembly of section .text:
   ec:	00178793          	addi	a5,a5,1
   f0:	fef42623          	sw	a5,-20(s0)
   f4:	fec42703          	lw	a4,-20(s0)
-  f8:	0ee6b7b7          	lui	a5,0xee6b
-  fc:	27f78793          	addi	a5,a5,639 # ee6b27f <_end+0xed6aa7f>
+  f8:	017d87b7          	lui	a5,0x17d8
+  fc:	83f78793          	addi	a5,a5,-1985 # 17d783f <_end+0x16d703f>
  100:	fee7d4e3          	bge	a5,a4,e8 <main+0x40>
  104:	00100517          	auipc	a0,0x100
  108:	efc50513          	addi	a0,a0,-260 # 100000 <hello>

@@ -33,7 +33,7 @@ int main()
     while (1)
     {
         int cnt = 0;
-        while(cnt < 250000000) cnt ++;
+        while(cnt < 25000000) cnt ++;
         putstr(hello);
         putstr(nyan);
         putstr(nunhehheh);
