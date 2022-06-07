@@ -102,6 +102,7 @@ wire cpu_we, data_we, vga_we;
 // instr: 000, data: 001, vga: 002, ps2: 003, ...
 assign data_we	=(daddr[31:20] == 12'h001)? cpu_we : 1'b0;
 assign vga_we	=(daddr[31:20] == 12'h002)? cpu_we : 1'b0;
+assign key_rd	=(daddr[31:20] == 12'h003);
 
 assign cpu_data	=(daddr[31:20] == 12'h001)? ddataout: // 选取dmem输出
 				((daddr[31:20] == 12'h003)? keymemout : 32'b0 ); // 键盘输出
@@ -115,7 +116,9 @@ wire [7:0] vdataout;
 wire [11:0] vrdaddr;
 
 // KBD
-wire [7:0] scancode, asciicode;
+reg nextdata_n;
+wire [7:0] keycode;
+wire rdempty, wrfull;
 
 // CLK
 wire clk, cpuclk, vgaclk, kbdclk, vrdclk;
@@ -221,16 +224,51 @@ vga_ctrl vga_inst(
 //wire [7:0] tmp1, tmp2;
 
 // ps2
-keyboard my_key(
+
+initial begin
+	nextdata_n <= 1'b1;
+end
+
+always @(negedge drdclk) begin
+	if (nextdata_n == 1'b0) nextdata_n <= 1'b1;
+	else if (ready && ) nextdata_n <= 1'b0;
+	else nextdata_n <= 1'b1;
+end
+
+ps2_keyboard kbd_inst(
 	.clk(kbdclk),
 	.clrn(rst),
 	.ps2_clk(PS2_CLK),
 	.ps2_data(PS2_DAT),
-//	.cur_key(tmp1),
-//	.ascii_key(tmp2)
-	.cur_key(scancode),
-	.ascii_key(asciicode)
+	.data(keydata),
+	.ready(ready),
+	.nextdata_n(nextdata_n),
+	.overflow(overflow)
 );
+
+kfifo my_fifo(
+	.data(keydata);
+	.rdclk(cpuclk);
+	.rdreq(key_rd);
+	.wrclk(kbdclk);
+	.wrreq(ready);
+	.q(kfifodata);
+	.rdempty(rdempty);
+	.wrfull(wrfull);
+);
+
+assign keymemdata = rdempty ? 8'b0 : kfifodata;
+
+// keyboard my_key(
+// 	.clk(kbdclk),
+// 	.clrn(rst),
+// 	.ps2_clk(PS2_CLK),
+// 	.ps2_data(PS2_DAT),
+// //	.cur_key(tmp1),
+// //	.ascii_key(tmp2)
+// 	.cur_key(scancode),
+// 	.ascii_key(asciicode)
+// );
 
 // CLK
 clkgen #(25000000) my_clk(
