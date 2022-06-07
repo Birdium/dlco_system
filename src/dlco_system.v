@@ -105,10 +105,11 @@ assign vga_we	=(daddr[31:20] == 12'h002)? cpu_we : 1'b0;
 assign key_rd	=(daddr[31:20] == 12'h003);
 
 assign cpu_data	=(daddr[31:20] == 12'h001)? ddataout: // 选取dmem输出
-				((daddr[31:20] == 12'h003)? keymemout : 32'b0 ); // 键盘输出
+				((daddr[31:20] == 12'h003)? keymemout : // 键盘输出
+				((daddr[31:20] == 12'h004)? ms_cnt : 32'b0 )); // 时钟输出
 
 // VGA + vmem
-reg [11:0] vga_data;
+wire [11:0] vga_data;
 wire [9:0] h_addr, v_addr;
 wire [3:0] vga_r, vga_g, vga_b;
 
@@ -276,6 +277,20 @@ clkgen #(25000000) my_clk(
 	.clken(1'b1),
 	.clkout(clk)
 );
+
+reg [31:0] ms_cnt, clock_cnt;
+initial begin 
+	ms_cnt <= 32'b0;
+	clock_cnt <= 32'b0;
+end
+always @(posedge CLOCK_50) begin
+	if (clock_cnt = 12499) begin
+		ms_cnt <= ms_cnt + 1;
+		clock_cnt <= 32'b0;
+	end
+	else clock_cnt <= clock_cnt + 1;
+end
+
 assign LEDR = PC[11:2];
 
 assign cpuclk = clk;

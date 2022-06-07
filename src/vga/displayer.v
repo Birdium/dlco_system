@@ -37,10 +37,11 @@ cursor my_cursor(clk, flash_on);
 // character reader
 always @ (posedge clk)
 begin
-	if (scan_x == cur_x && scan_y == cur_y) begin
-		data <= {12{flash_on}};
-	end
-	else data <= {12{line[ch_x[3:0]]}};
+//	if (scan_x == cur_x && scan_y == cur_y) begin
+//		data <= {12{flash_on}};
+//	end
+//	else 
+	data <= {12{line[ch_x[3:0]]}};
 end
 
 // no need to write.. tashikani
