@@ -6,9 +6,8 @@
 #define LINE_ADDR    0x00500000
 #define COLOR_ADDR   0x00500004
 
-
 void putstr(char* str);
 void putch(char ch);
-int gettimeofday();
+int gettimeofday(); 
 
 void vga_init(void);

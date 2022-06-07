@@ -22,7 +22,7 @@ void vga_init(){
 }
 
 void vga_roll(){
-    start_line++;
+    *start_line++;
     for(int j=0;j<VGA_MAXCOL;j++){
         VGA(VGA_MAXLINE-1, j) = 0;
     }
