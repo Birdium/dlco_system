@@ -10,6 +10,20 @@ void entry()
     asm("addi sp, sp, -4");
     main();
 }
+
+// void Hello(){
+//     putstr(hello);
+// }
+
+int fib(int n){
+    int a = 1, b = 1;
+    for(int i = 2; i <= n; i++){
+        b = a + b;
+        a = b - a;
+    } 
+    return b;
+}
+
 int main()
 {
     vga_init();
@@ -18,6 +32,7 @@ int main()
     putstr(nunhehheh);
     while (1)
     {
+        while(100000000) ;
         putstr(hello);
         putstr(nyan);
         putstr(nunhehheh);
