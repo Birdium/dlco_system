@@ -16,9 +16,11 @@ int main()
     putstr(hello);
     putstr(nyan);
     putstr(nunhehheh);
-    putstr(nyan);
     while (1)
     {
+        putstr(hello);
+        putstr(nyan);
+        putstr(nunhehheh);
     };
     return 0;
 }
