@@ -97,16 +97,22 @@ wire [31:0] iaddr, idataout, daddr, ddataout, ddata, ddatain, cpu_data, PC;
 wire [31:0] keymemout;
 wire [2:0] dop;
 wire iclk, drdclk, dwrclk;
-wire cpu_we, data_we, vga_we;
+wire cpu_we, data_we, vga_we, vga_rollen, key_rd;
 
 // instr: 000, data: 001, vga: 002, ps2: 003, ...
 assign data_we	=(daddr[31:20] == 12'h001)? cpu_we : 1'b0;
 assign vga_we	=(daddr[31:20] == 12'h002)? cpu_we : 1'b0;
+assign vga_rollen	=(daddr == 32'h00500000)? cpu_we : 1'b0; // 起始行号寄存器
+
+// not for CPU
 assign key_rd	=(daddr[31:20] == 12'h003);
 
-assign cpu_data	=(daddr[31:20] == 12'h001)? ddataout: // 选取dmem输出
-				((daddr[31:20] == 12'h003)? keymemout : // 键盘输出
-				((daddr[31:20] == 12'h004)? ms_cnt : 32'b0 )); // 时钟输出
+assign cpu_data	=
+ (daddr[31:20] == 12'h001)? ddataout: // 选取dmem输出
+((daddr[31:20] == 12'h003)? keymemout : // 键盘输出
+((daddr[31:20] == 12'h004)? ms_cnt : // 时钟输出
+((daddr == 32'h00500000)? {27'b0, start_line} :
+((daddr == 32'h00500004)? ms_cnt : 32'b0 )))); // 起始行号寄存器(read only)
 
 // VGA + vmem
 wire [11:0] vga_data;
@@ -115,6 +121,8 @@ wire [3:0] vga_r, vga_g, vga_b;
 
 wire [7:0] vdataout;
 wire [11:0] vrdaddr;
+wire [6:0] vrdaddr_h;
+wire [4:0] vrdaddr_v;
 
 // KBD
 reg nextdata_n;
@@ -180,6 +188,8 @@ imem my_imem(
 // TBD: 此外可以将0x00201000映射到起始行号寄存器, 0x00201001颜色寄存器...
 // 上升沿cpu写, 下降沿vga读
 
+assign vrdaddr = {vrdaddr_v + start_line, vrdaddr_h};
+
 vmem my_vmem(
 	.data(ddatain[7:0]),
 	.rdaddress(vrdaddr), // VGA 读
@@ -205,7 +215,8 @@ displayer my_displayer(
 	.v_addr(v_addr),
 	.data(vga_data),
 	.vrdclk(vrdclk), // let VGA tell vmem when to read
-	.vrdaddr(vrdaddr)
+	.vrdaddr_h(vrdaddr_h),
+	.vrdaddr_v(vrdaddr_v)
 );
 
 vga_ctrl vga_inst(
@@ -284,14 +295,26 @@ initial begin
 	clock_cnt <= 32'b0;
 end
 always @(posedge CLOCK_50) begin
-	if (clock_cnt = 12499) begin
+	if (clock_cnt == 12499) begin
 		ms_cnt <= ms_cnt + 1;
 		clock_cnt <= 32'b0;
 	end
 	else clock_cnt <= clock_cnt + 1;
 end
 
-assign LEDR = PC[11:2];
+// CTRL 
+reg [4:0] start_line;
+initial begin
+	start_line <= 5'b0;
+end
+
+always @(posedge dwrclk) begin
+	if (vga_rollen) begin
+		start_line <= ddatain[4:0];
+	end
+end
+
+assign LEDR = {vrdaddr[11:7], start_line};
 
 assign cpuclk = clk;
 assign vgaclk = clk;

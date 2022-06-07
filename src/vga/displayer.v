@@ -3,7 +3,8 @@ module displayer(
 	input [9:0] h_addr, v_addr,
 	input [7:0] ascii,
 	output reg [11:0] data, 
-	output [11:0] vrdaddr,
+	output [6:0] vrdaddr_h,
+	output [4:0] vrdaddr_v,
 	output vrdclk
 );
 
@@ -25,7 +26,8 @@ end
 
 assign scan_x = h_addr / 9;
 assign scan_y = v_addr / 16;
-assign vrdaddr = {scan_y[4:0], scan_x[6:0]};
+assign vrdaddr_h = scan_x[6:0];
+assign vrdaddr_v = scan_y[4:0];
 
 assign vrdclk = ~clk;
 assign ch_x = h_addr % 9;
