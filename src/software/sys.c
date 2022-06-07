@@ -2,7 +2,7 @@
 
 #define VGA_CUR vga_start[(((*start_line) + vga_line) << 7) + vga_ch]
 
-#define VGA(line, ch) vga_start[((line) << 7) + (ch)]
+#define VGA(line, ch) vga_start[(((*start_line) + line) << 7) + (ch)]
 
 #define BACKSPACE 8
 #define ENTER 10
