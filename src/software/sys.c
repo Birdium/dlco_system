@@ -9,6 +9,7 @@
 
 char* vga_start = (char*) VGA_START;
 int*  time = (int*) CLK_ADDR;
+int*  start_line = (int*) LINE_ADDR;
 int   vga_line=0;
 int   vga_ch=0;
 
@@ -21,9 +22,7 @@ void vga_init(){
 }
 
 void vga_roll(){
-    for(int i=0;i<VGA_MAXLINE-1;i++)
-        for(int j=0;j<VGA_MAXCOL;j++)
-            VGA(i, j) = VGA(i + 1, j);
+    start_line++;
     for(int j=0;j<VGA_MAXCOL;j++){
         VGA(VGA_MAXLINE-1, j) = 0;
     }
@@ -45,7 +44,7 @@ void putch(char ch) {
             vga_line++;
             if (vga_line>=VGA_MAXLINE) {
                 vga_roll();
-                vga_line = VGA_MAXLINE-1;
+                vga_line = VGA_MAXLINE - 1;
             } 
             vga_ch = 0;
             break;
@@ -56,7 +55,7 @@ void putch(char ch) {
                 vga_line++; 
                 if(vga_line>=VGA_MAXLINE){
                     vga_roll();
-                    vga_line = VGA_MAXLINE-1;
+                    vga_line = VGA_MAXLINE - 1;
                 } 
                 vga_ch = 0;
             }
