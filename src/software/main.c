@@ -1,43 +1,48 @@
 #include "sys.h"
+
+#include "stdio.h"
+#include "string.h"
+
 char hello[]="Hello World!\n\0";
 char nyan[]="Nyan!\n\0";
 char nunhehheh[]="Nunhehhehaaaaaaaaaahhh!\n\0";
+
 int main();
+
 //setup the entry point
-void entry()
-{
+void entry() {
     asm("lui sp, 0x00120"); //set stack to high address of the dmem
     asm("addi sp, sp, -4");
     main();
 }
 
-// void Hello(){
-//     putstr(hello);
-// }
+// + sizeof(#str) 是为了跳过命令 "cmd args" 的前缀，把 args 作为参数传入 exec_##str
+#define CMD_EXEC(str) if (!strncmp(cmd, #str, sizeof(#str))) exec_##str(cmd + sizeof(#str));
+#define CMD_DEF( str) void exec_##str(const char *cmd);
+#define COMMANDS(_) _(echo) _(fib) _(eval)
 
-int fib(int n){
-    int a = 1, b = 1;
-    for(int i = 2; i <= n; i++){
-        b = a + b;
-        a = b - a;
-    } 
-    return b;
+COMMANDS(CMD_DEF)
+
+void exec(const char *cmd) {
+    COMMANDS(CMD_EXEC);
 }
 
-void wait(int t) {
-    int cnt = 0;
-    t *= 100000;
-    while (cnt < t) cnt ++;
-}
-
-int main()
-{
+int main() {
     vga_init();
+
+    static char cmd[255];
+    int ncmd = 0;
     putstr(nyan);
 
     while (1) {
-        printf("%d",readkey());
-        wait(20);
+        // sleep(1);
+        int key = readkey();
+        cmd[ncmd ++] = key;
+        putch(key);
+
+        if (key == 10) { // \n
+            exec(cmd);
+        }
     }
     return 0;
 }

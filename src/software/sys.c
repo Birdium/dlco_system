@@ -1,13 +1,6 @@
 #include "sys.h"
 #include "stdarg.h"
 
-#define INT32_MIN -2147483648
-#define panic(x)
-
-#define bool int
-#define true  1
-#define false 0
-
 #define VGA_CUR vga_start[(((*start_line) + vga_line) << 7) + vga_ch]
 
 #define VGA(line, ch) vga_start[(((*start_line) + line) << 7) + (ch)]
@@ -24,6 +17,12 @@ int   vga_ch=0;
 
 int gettimeofday(){
   return *time;
+}
+
+void sleep(int tm) {
+    int cnt = 0;
+    tm *= 10000;
+    while (cnt < tm) cnt ++;
 }
 
 void vga_init(){
@@ -78,52 +77,11 @@ void putch(char ch) {
 }
 
 void putstr(const char *str){
-  for(char* p=str;*p!=0;p++)
+  for (char *p = str; *p; p ++) {
     putch(*p);
+  }
 }
 
 int readkey() {
   return *key;
-}
-
-static void putu_(unsigned x) {
-  if (x == 0) return ;
-  putu_(x / 10);
-  putch('0' + x % 10);
-}
-
-void putu(unsigned x) {
-  if (x == 0) putch('0');
-  else putu_(x);
-}
-
-void puti(int x) {
-  if (x < 0) {
-    x = -x;
-    putch('-');
-  }
-  putu(x);
-}
-
-void printf(const char *fmt, ...) {
-  va_list ap; va_start(ap, fmt);
-  for (const char *s = fmt; *s != '\0'; s ++) {
-    if (*s != '%') {
-      putch(*s);
-      continue;
-    }
-    s ++;
-    switch (*s) {
-      case '%': putch('%');                       break;
-      case 'c': putch(va_arg(ap, int));           break;
-      case 'u': putu(va_arg(ap, unsigned));       break;
-      case 'd': puti(va_arg(ap, int));            break;
-      case 's': putstr(va_arg(ap, const char *)); break;
-    }
-  }
-  va_end(ap);
-}
-
-void puts(const char *str) {
-  putstr(str);
 }

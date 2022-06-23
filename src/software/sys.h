@@ -18,3 +18,5 @@ void vga_init(void);
 
 void printf (const char *format, ...);
 void puts(const char *str);
+
+void sleep(int tm);
