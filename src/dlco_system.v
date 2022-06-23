@@ -328,6 +328,6 @@ end
 
 assign cpuclk = clk;
 assign vgaclk = clk;
-assign kbdclk = ~clk;
+assign kbdclk = clk;
 
 endmodule
