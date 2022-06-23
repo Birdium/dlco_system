@@ -247,52 +247,46 @@ always @(negedge drdclk) begin
 	else nextdata_n <= 1'b1;
 end
 
-ps2_keyboard kbd_inst(
+wire shift, caps, ctrl, alt, is_dir; // kbd ctrl signals
+wire clk_as; // ascii_cnt's clk
+wire kbden; // fifo wrreq
+
+keyboard kbd_inst(
 	.clk(kbdclk),
 	.clrn(~rst),
 	.ps2_clk(PS2_CLK),
 	.ps2_data(PS2_DAT),
-	.data(keydata),
-	.ready(ready),
-	.nextdata_n(nextdata_n),
-	.overflow(overflow)
+	.ascii_key(keydata),
+	.shift(shift),
+	.caps(caps),
+	.ctrl(ctrl),
+	.alt(alt),
+	.is_dir(is_dir)
+);
+
+clk_slow as_clk(
+	.clk(CLOCK_50),
+	.out(clk_as)
+);
+
+ascii_cnt my_cnt(
+	.clk(clk_as),
+	.en(kbden),
+	.ascii(keydata)
 );
 
 kfifo my_fifo(
 	.data(keydata),
 	.rdclk(drdclk),
 	.rdreq(key_rd),
-	.wrclk(kbdclk),
-	.wrreq(ready),
+	.wrclk(~clk_as),
+	.wrreq(kbden),
 	.q(kfifodata),
 	.rdempty(rdempty),
 	.wrfull(wrfull)
 );
 
-assign keymemout = rdempty ? 8'b1 : kfifodata;
-
-// ----- testing fifo -----
-reg [4:0] wrfull_cnt, rdempty_cnt;
-initial begin 
-	wrfull_cnt = 0;
-end
-always @ (posedge ready) begin 
-	wrfull_cnt <= wrfull_cnt + 1;
-end
-assign LEDR[4:0] = wrfull_cnt;
-assign LEDR[5] = rdempty;
-// ----- end of testing fifo -----
-
-// keyboard my_key(
-// 	.clk(kbdclk),
-// 	.clrn(rst),
-// 	.ps2_clk(PS2_CLK),
-// 	.ps2_data(PS2_DAT),
-// //	.cur_key(tmp1),
-// //	.ascii_key(tmp2)
-// 	.cur_key(scancode),
-// 	.ascii_key(asciicode)
-// );
+assign keymemout = rdempty ? 8'b0 : kfifodata;
 
 // CLK
 clkgen #(25000000) my_clk(
