@@ -247,23 +247,40 @@ always @(negedge drdclk) begin
 	else nextdata_n <= 1'b1;
 end
 
-ps2_keyboard kbd_inst(
+wire shift, caps, ctrl, alt, is_dir; // kbd ctrl signals
+wire clk_as; // ascii_cnt's clk
+wire kbden; // fifo wrreq
+
+keyboard kbd_inst(
 	.clk(kbdclk),
 	.clrn(~rst),
 	.ps2_clk(PS2_CLK),
 	.ps2_data(PS2_DAT),
-	.data(keydata),
-	.ready(ready),
-	.nextdata_n(nextdata_n),
-	.overflow(overflow)
+	.ascii_key(keydata),
+	.shift(shift),
+	.caps(caps),
+	.ctrl(ctrl),
+	.alt(alt),
+	.is_dir(is_dir)
+);
+
+clk_slow as_clk(
+	.clk(CLOCK_50),
+	.out(clk_as)
+);
+
+ascii_cnt my_cnt(
+	.clk(clk_as),
+	.en(kbden),
+	.ascii(keydata)
 );
 
 kfifo my_fifo(
 	.data(keydata),
 	.rdclk(drdclk),
 	.rdreq(key_rd),
-	.wrclk(kbdclk),
-	.wrreq(ready),
+	.wrclk(~clk_as),
+	.wrreq(kbden),
 	.q(kfifodata),
 	.rdempty(rdempty),
 	.wrfull(wrfull)
