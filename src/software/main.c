@@ -24,23 +24,20 @@ int fib(int n){
     return b;
 }
 
+void wait(int t) {
+    int cnt = 0;
+    t *= 100000;
+    while (cnt < t) cnt ++;
+}
+
 int main()
 {
     vga_init();
-    putstr(hello);
     putstr(nyan);
-    putstr(nunhehheh);
-    while (1)
-    {
-        int cnt = 0;
-        while(cnt < 2500000) cnt ++;
-        putstr(hello);
-        cnt = 0;
-        while(cnt < 2500000) cnt ++;
-        putstr(nyan);
-        cnt = 0;
-        while(cnt < 2500000) cnt ++;
-        putstr(nunhehheh);
-    };
+
+    while (1) {
+        printf("%d",readkey());
+        wait(20);
+    }
     return 0;
 }

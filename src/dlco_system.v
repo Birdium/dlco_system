@@ -269,7 +269,7 @@ kfifo my_fifo(
 	.wrfull(wrfull)
 );
 
-assign keymemdata = rdempty ? 8'b0 : kfifodata;
+assign keymemout = rdempty ? 8'b0 : kfifodata;
 
 // keyboard my_key(
 // 	.clk(kbdclk),

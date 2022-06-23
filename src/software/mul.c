@@ -45,3 +45,23 @@ unsigned int __udivsi3(unsigned int a, unsigned int b) {
     }
     return res;
 }
+
+/*
+ * 假装这是signed
+ * 规定 `a%b == a - (a/b)*b`
+ * 溢出是UB
+ */
+int __divsi3(int a, int b) {
+    if (a > 0 && b > 0) {
+        return __udivsi3(a, b);
+    } else if (a < 0 && b < 0) {
+        return __udivsi3(-a, -b);
+    } else if (a > 0) {
+        return __udivsi3(a, -b);
+    } else return __udivsi3(-a, b);
+}
+
+int __modsi3(int a, int b) {
+    int c = __divsi3(a, b);
+    return a - __mulsi3(b, c);
+}
