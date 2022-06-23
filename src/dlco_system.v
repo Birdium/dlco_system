@@ -126,8 +126,8 @@ wire [4:0] vrdaddr_v;
 
 // KBD
 reg nextdata_n;
-wire [7:0] keycode;
-wire rdempty, wrfull;
+wire [7:0] keydata, kfifodata;
+wire rdempty, wrfull, ready, overflow;
 
 // CLK
 wire clk, cpuclk, vgaclk, kbdclk, vrdclk;
@@ -249,7 +249,7 @@ end
 
 ps2_keyboard kbd_inst(
 	.clk(kbdclk),
-	.clrn(rst),
+	.clrn(~rst),
 	.ps2_clk(PS2_CLK),
 	.ps2_data(PS2_DAT),
 	.data(keydata),
@@ -269,7 +269,19 @@ kfifo my_fifo(
 	.wrfull(wrfull)
 );
 
-assign keymemout = rdempty ? 8'b0 : kfifodata;
+assign keymemout = rdempty ? 8'b1 : kfifodata;
+
+// ----- testing fifo -----
+reg [4:0] wrfull_cnt, rdempty_cnt;
+initial begin 
+	wrfull_cnt = 0;
+end
+always @ (posedge ready) begin 
+	wrfull_cnt <= wrfull_cnt + 1;
+end
+assign LEDR[4:0] = wrfull_cnt;
+assign LEDR[5] = rdempty;
+// ----- end of testing fifo -----
 
 // keyboard my_key(
 // 	.clk(kbdclk),
@@ -313,8 +325,6 @@ always @(posedge dwrclk) begin
 		start_line <= ddatain[4:0];
 	end
 end
-
-assign LEDR = {vrdaddr[11:7], start_line};
 
 assign cpuclk = clk;
 assign vgaclk = clk;
