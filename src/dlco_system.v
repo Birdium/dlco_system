@@ -269,30 +269,7 @@ kfifo my_fifo(
 	.wrfull(wrfull)
 );
 
-assign keymemout = rdempty ? 8'b1 : kfifodata;
-
-// ----- testing fifo -----
-reg [4:0] wrfull_cnt, rdempty_cnt;
-initial begin 
-	wrfull_cnt = 0;
-end
-always @ (posedge ready) begin 
-	wrfull_cnt <= wrfull_cnt + 1;
-end
-assign LEDR[4:0] = wrfull_cnt;
-assign LEDR[5] = rdempty;
-// ----- end of testing fifo -----
-
-// keyboard my_key(
-// 	.clk(kbdclk),
-// 	.clrn(rst),
-// 	.ps2_clk(PS2_CLK),
-// 	.ps2_data(PS2_DAT),
-// //	.cur_key(tmp1),
-// //	.ascii_key(tmp2)
-// 	.cur_key(scancode),
-// 	.ascii_key(asciicode)
-// );
+assign keymemout = rdempty ? 8'b0 : kfifodata;
 
 // CLK
 clkgen #(25000000) my_clk(
