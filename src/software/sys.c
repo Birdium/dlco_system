@@ -44,6 +44,9 @@ void blink() {
 }
 
 void putch(char ch) {
+  if (ch == '\n') {
+    ch = ENTER;
+  }
   switch (ch){
     case BACKSPACE:
       if (vga_line || vga_ch) {
@@ -56,6 +59,7 @@ void putch(char ch) {
       }
       break;
     case ENTER:
+      VGA_CUR = 0;
       vga_line++;
       if (vga_line>=VGA_MAXLINE) {
         vga_roll();

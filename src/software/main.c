@@ -15,7 +15,7 @@ void entry() {
 }
 
 // + sizeof(#str) 是为了跳过命令 "cmd args" 的前缀，把 args 作为参数传入 exec_##str
-#define CMD_EXEC(str) if (!kstrncmp(cmd, #str, sizeof(#str))) { \
+#define CMD_EXEC(str) if (!kstrncmp(cmd, #str, sizeof(#str) - 1)) { \
     exec_##str(cmd + sizeof(#str)); \
     return 0; }
 #define CMD_DEF( str) void exec_##str(const char *cmd);
@@ -54,6 +54,7 @@ int main() {
                 break;
             }
             case ENTER: {
+                putch(ENTER);
                 cmd[ncmd] = '\0';
                 exec(cmd);
                 ncmd = 0;
