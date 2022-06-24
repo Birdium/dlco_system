@@ -269,9 +269,11 @@ clk_slow as_clk(
 	.out(clk_as)
 );
 
-reg [12:0] wjp_cnt;
-reg [7:0] key_code;
-reg state;
+ascii_cnt my_cnt(
+	.clk(clk_as),
+	.en(kbden),
+	.ascii(keydata)
+);
 
 handmade_fifo my_fifo(
 	.data(keydata),
