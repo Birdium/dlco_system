@@ -28,25 +28,25 @@ always @ (posedge clk) begin
 		cnt <= 0;
 		long_pressing <= 0;
 	end
-//	else if (long_pressing) begin
-//		if (cnt == 2499) begin
-//			en <= 1;
-//			cnt <= 0;
-//		end
-//		else begin
-//			en <= 0;
-//			cnt <= cnt + 1;
-//		end
-//	end
-//	else if (cnt == 24999) begin
-//		en <= 1;
-//		long_pressing <= 1;
-//		cnt <= 0;
-//	end
-//	else begin
-//		en <= 0;
-//		cnt <= cnt + 1;
-//	end
+	else if (long_pressing) begin
+		if (cnt == 2499) begin
+			en <= 1;
+			cnt <= 0;
+		end
+		else begin
+			en <= 0;
+			cnt <= cnt + 1;
+		end
+	end
+	else if (cnt == 24999) begin
+		en <= 1;
+		long_pressing <= 1;
+		cnt <= 0;
+	end
+	else begin
+		en <= 0;
+		cnt <= cnt + 1;
+	end
 end
 
 endmodule

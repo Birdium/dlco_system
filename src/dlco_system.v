@@ -275,7 +275,7 @@ ascii_cnt my_cnt(
 	.ascii(keydata)
 );
 
-kfifo my_fifo(
+handmade_fifo my_fifo(
 	.data(keydata),
 	.rdclk(drdclk),
 	.rdreq(key_rd),
@@ -289,11 +289,13 @@ kfifo my_fifo(
 // for kfifo test
 reg [4:0] kbden_cnt;
 initial kbden_cnt = 5'b0;
-always @ (posedge key_rd) begin
+always @ (posedge kbden) begin
 	kbden_cnt <= kbden_cnt + 1;
 end
 assign LEDR[4:0] = kbden_cnt;
 assign LEDR[5] = kbden;
+bcd7seg seg0(keydata[3:0], HEX0);
+bcd7seg seg1(keydata[7:4], HEX1);
 // end of fifo test
 
 assign keymemout = rdempty ? 8'b0 : kfifodata;
