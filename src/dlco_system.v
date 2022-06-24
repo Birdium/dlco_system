@@ -274,46 +274,27 @@ reg [12:0] wjp_cnt;
 reg [7:0] key_code;
 reg state;
 
-always @(negedge drdclk) begin
-	if (wjp_cnt == 13'd999) begin
-		wjp_cnt <= 0;
-		state <= ~state;
-	end else begin
-		wjp_cnt <= wjp_cnt + 8'd1;
-	end
-
-	if (state) begin
-		kfifodata <= keydata;
-	end else begin
-		kfifodata <= 0;
-	end
-
-	if (key_rd) begin
-		kfifodata <= 0;
-	end
-end
-
-assign rdempty = 1'b1; 
-
-// kfifo my_fifo(
-// 	.data(keydata),
-// 	.rdclk(drdclk),
-// 	.rdreq(key_rd),
-// 	.wrclk(~clk_as),
-// 	.wrreq(1'b1),
-// 	.q(kfifodata),
-// 	.rdempty(rdempty),
-// 	.wrfull(wrfull)
-// );
+handmade_fifo my_fifo(
+	.data(keydata),
+	.rdclk(drdclk),
+	.rdreq(key_rd),
+	.wrclk(kbden),
+	.wrreq(1'b1),
+	.q(kfifodata),
+	.rdempty(rdempty),
+	.wrfull(wrfull)
+);
 
 // for kfifo test
 reg [4:0] kbden_cnt;
 initial kbden_cnt = 5'b0;
-always @ (posedge key_rd) begin
+always @ (posedge kbden) begin
 	kbden_cnt <= kbden_cnt + 1;
 end
 assign LEDR[4:0] = kbden_cnt;
 assign LEDR[5] = kbden;
+bcd7seg seg0(keydata[3:0], HEX0);
+bcd7seg seg1(keydata[7:4], HEX1);
 // end of fifo test
 
 //assign keymemout = rdempty ? 8'b0 : kfifodata;
