@@ -82,6 +82,10 @@ int eval(const int l, const int r) {
         if (p == -1 || prior[tokens[i].ch] < prior[tokens[p].ch]) {
             p = i;
         }
+
+        if (p != -1 && tokens[p].ch == '-' && tokens[i].ch == '+') {
+            p = i;
+        }
     }
     int lexpr = eval(l, p);
     int rexpr = eval(p + 1, r);
@@ -128,9 +132,20 @@ void parse(const char *expr, int len) {
     }
 }
 
+#include <stdio.h>
+#include <string.h>
+
 void exec_eval(const char *cmd) {
     while (*cmd == ' ') cmd ++;
     ntok = 0;
-    parse(cmd, kstrlen(cmd));
-    kprintf("%d\n", eval(0, ntok));
+    parse(cmd, strlen(cmd));
+    printf("%d\n", eval(0, ntok));
+}
+
+int main() {
+    static char s[255];
+    while (1) {
+        fgets(s, sizeof(s), stdin);
+        exec_eval(s);
+    }
 }
