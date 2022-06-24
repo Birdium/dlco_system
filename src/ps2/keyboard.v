@@ -7,13 +7,14 @@ module keyboard(
 
 
 wire ready, overflow;
-reg is_brk, nextdata_n;
+reg is_brk, upcoming_dir, nextdata_n;
 wire [7:0] keydata;
 
 initial begin
 	nextdata_n <= 1;
 	cur_key <= 0;
 	is_brk <= 0;
+	upcoming_dir <= 0;
 	is_dir <= 0;
 	shift <= 0;
 	ctrl <= 0;
@@ -28,18 +29,26 @@ always @ (negedge clk) begin
 		cur_key <= 0;
 		is_brk <= 0;
 		is_dir <= 0;
+		upcoming_dir <= 0;
+		shift <= 0;
+		ctrl <= 0;
+		caps <= 0;
 	end
 	else begin
 		if (ready) begin
 			if (keydata == 8'hF0) begin
 				is_brk <= 1;
-				is_dir <= 0;
 			end
 			else begin
 				if (is_brk) begin
 					is_brk <= 0;
 					if (keydata == 8'h12) begin
 						shift <= 0;
+					end
+					else if (upcoming_dir) begin
+						upcoming_dir <= 0;
+						is_dir <= 0;
+						// cur_key <= 8'h0;
 					end
 					else if (keydata == 8'h14) begin
 						ctrl <= 0;
@@ -52,7 +61,7 @@ always @ (negedge clk) begin
 					end
 				end
 				else if (keydata == 8'hE0) begin
-					is_dir <= 1;
+					upcoming_dir <= 1;
 				end
 				else if (keydata == 8'h12) begin
 					shift <= 1;
@@ -65,6 +74,11 @@ always @ (negedge clk) begin
 				end
 				else if (keydata == 8'h58) begin
 					caps <= ~caps;
+				end
+				else if (upcoming_dir) begin
+					upcoming_dir <= 0;
+					is_dir <= 1;
+					// cur_key <= keydata;
 				end
 				else cur_key <= keydata;
 			end
@@ -85,10 +99,14 @@ ps2_keyboard kbd_inst(
 	.overflow(overflow)
 );
 
+wire [7:0] raw_ascii;
+
 data2ascii ascii_inst(
 	.data(cur_key),
-	.ascii(ascii_key),
+	.ascii(raw_ascii),
 	.uppercase(shift^caps)
 );
+
+assign ascii_key = raw_ascii | {is_dir, 7'b0};
 
 endmodule
