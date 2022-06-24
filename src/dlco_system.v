@@ -296,8 +296,8 @@ bcd7seg seg0(keydata[3:0], HEX0);
 bcd7seg seg1(keydata[7:4], HEX1);
 // end of fifo test
 
-//assign keymemout = rdempty ? 8'b0 : kfifodata;
-assign keymemout = kfifodata;
+assign keymemout = rdempty ? 8'b0 : kfifodata;
+// assign keymemout = kfifodata;
 
 // CLK
 clkgen #(25000000) my_clk(
