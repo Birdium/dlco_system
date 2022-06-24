@@ -99,9 +99,9 @@ Disassembly of section .text:
      15c:	00050793          	mv	a5,a0
      160:	fef403a3          	sb	a5,-25(s0)
      164:	fe744783          	lbu	a5,-25(s0)
-     168:	00a00713          	li	a4,10
+     168:	00d00713          	li	a4,13
      16c:	02e78e63          	beq	a5,a4,1a8 <main+0xa0>
-     170:	00a00713          	li	a4,10
+     170:	00d00713          	li	a4,13
      174:	06f74463          	blt	a4,a5,1dc <main+0xd4>
      178:	08078a63          	beqz	a5,20c <main+0x104>
      17c:	00800713          	li	a4,8
@@ -1470,7 +1470,7 @@ Disassembly of section .text:
     15e8:	fef44783          	lbu	a5,-17(s0)
     15ec:	00800713          	li	a4,8
     15f0:	00e78863          	beq	a5,a4,1600 <putch+0x30>
-    15f4:	00a00713          	li	a4,10
+    15f4:	00d00713          	li	a4,13
     15f8:	0ce78863          	beq	a5,a4,16c8 <putch+0xf8>
     15fc:	1200006f          	j	171c <putch+0x14c>
     1600:	00100797          	auipc	a5,0x100
