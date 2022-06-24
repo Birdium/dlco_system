@@ -61,8 +61,10 @@ int main() {
                 break;
             }
             default: {
-                putch(key);
-                cmd[ncmd ++] = (char)key;
+                if (ncmd < 29) {
+                    putch(key);
+                    cmd[ncmd ++] = (char)key;
+                }
                 break;
             }
         }
