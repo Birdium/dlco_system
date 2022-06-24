@@ -1,5 +1,12 @@
+#ifdef DEBUG
+#include <stdio.h>
+#include <string.h>
+#else
 #include "kstdio.h"
 #include "kstring.h"
+#endif
+
+#include "sys.h"
 
 #define NR_TOKENS 255
 
@@ -25,7 +32,33 @@ static int prior[] = {
 
 int ntok = 0;
 
-int next_bracket(int i) {
+void exec_fib(const char *cmd) {
+    while (*cmd == ' ') cmd ++;
+    int n = 0;
+    while (*cmd >= '0' && *cmd <= '9') {
+        n = n * 10 + *cmd - '0';
+        cmd ++;
+    }
+    int a = 1, b = 1;
+    for(int i = 2; i <= n; i++){
+        b = a + b;
+        a = b - a;
+    } 
+    kprintf("%d\n", b);
+}
+#include "sys.h"
+
+void exec_echo(const char *cmd) {
+    while (*cmd == ' ') cmd ++;
+    putstr(cmd);
+    putch('\n');
+}
+
+void exec_clear(__attribute__((unused))const char *cmd ) {
+    vga_init();
+}
+
+static int next_bracket(int i) {
     int cnt = 1;
     for (i ++; cnt; i ++) {
         if (tokens[i].type != TOKEN_CHAR)
@@ -39,15 +72,15 @@ int next_bracket(int i) {
     return i;
 }
 
-int LB(token_t tk) {
+static int LB(token_t tk) {
     return tk.type == TOKEN_CHAR && tk.ch == '(';
 }
 
-int RB(token_t tk) {
+static int RB(token_t tk) {
     return tk.type == TOKEN_CHAR && tk.ch == ')';
 }
 
-int ksm(int a, int b) {
+static int ksm(int a, int b) {
     int res = 1;
     while (b --) {
         res *= a;
@@ -99,7 +132,7 @@ int eval(const int l, const int r) {
     return 0;
 }
 
-void parse(const char *expr, int len) {
+static void parse(const char *expr, int len) {
     int num = 0;
     int is_num = 0;
     for (const char *p = expr; p != expr + len; p ++) {
@@ -131,13 +164,6 @@ void parse(const char *expr, int len) {
         };
     }
 }
-
-#ifdef DEBUG
-
-#include <stdio.h>
-#include <string.h>
-
-#endif
 
 void exec_eval(const char *cmd) {
     while (*cmd == ' ') cmd ++;
