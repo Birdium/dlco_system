@@ -7,14 +7,6 @@
 #define NR_LINE 35
 #define NR_COL  55
 
-static int next(int x) {
-    return (x + 1) % NR_LINE;
-}
-
-static int prev(int x) {
-    return (x + NR_LINE - 1) % NR_LINE;
-}
-
 int main();
 
 //setup the entry point
@@ -23,6 +15,15 @@ void entry() {
     asm("addi sp, sp, -4");
     main();
 }
+
+static int next(int x) {
+    return (x + 1) % NR_LINE;
+}
+
+static int prev(int x) {
+    return (x + NR_LINE - 1) % NR_LINE;
+}
+
 
 // + sizeof(#str) 是为了跳过命令 "cmd args" 的前缀，把 args 作为参数传入 exec_##str
 #define CMD_EXEC(str) if (!kstrncmp(cmd, #str, sizeof(#str) - 1)) { \
