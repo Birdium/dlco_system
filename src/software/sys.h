@@ -9,7 +9,7 @@
 #define COLOR_ADDR   0x00500004
 
 #define BACKSPACE 8
-#define ENTER 10
+#define ENTER 13
 
 void putstr(const char* str);
 void putch(char ch);
