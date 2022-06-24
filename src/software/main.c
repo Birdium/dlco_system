@@ -19,7 +19,7 @@ void entry() {
     exec_##str(cmd + sizeof(#str)); \
     return 0; }
 #define CMD_DEF( str) void exec_##str(const char *cmd);
-#define COMMANDS(_) _(echo) _(fib) _(eval)
+#define COMMANDS(_) _(echo) _(fib) _(eval) _(clear)
 
 COMMANDS(CMD_DEF)
 
@@ -43,9 +43,7 @@ int main() {
             blink();
         }
         switch (key = readkey()) {
-            case 0: {
-                break;
-            }
+            case 0: break;
             case BACKSPACE: {
                 if (ncmd) {
                     putch(key);

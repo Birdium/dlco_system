@@ -16,6 +16,7 @@ void putch(char ch);
 int gettimeofday(); 
 
 char readkey();
+void vga_roll();
 
 void blink();
 
