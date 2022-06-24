@@ -4,6 +4,16 @@
 #include "kstring.h"
 
 #define PROMPT "Nyan>"
+#define NR_LINE 35
+#define NR_COL  55
+
+static int next(int x) {
+    return (x + 1) % NR_LINE;
+}
+
+static int prev(int x) {
+    return (x + NR_LINE - 1) % NR_LINE;
+}
 
 int main();
 
@@ -30,8 +40,9 @@ int exec(const char *cmd) {
 }
 
 int main() {
-    static char cmd[255];
+    static char cmd[NR_LINE][NR_COL];
     int ncmd = 0, uptime = gettimeofday();
+    int head = 0, tail = 0, cur = 0;
     char key;
 
     vga_init();
@@ -44,25 +55,46 @@ int main() {
         }
         switch (key = readkey()) {
             case 0: break;
+            case KEY_UP: {
+                if (cur != head) {
+                    for (; ncmd; ncmd --) {
+                        putch(BACKSPACE);
+                    }
+                    cur = prev(cur);
+                    for (; cmd[cur][ncmd]; ncmd ++) {
+                        putch(cmd[cur][ncmd]);
+                    }
+                }
+                break;
+            }
+            case KEY_DW: {
+                break;
+            }
             case BACKSPACE: {
                 if (ncmd) {
                     putch(key);
+                    cmd[cur][ncmd] = '\0';
                     ncmd --;
                 }
                 break;
             }
             case ENTER: {
                 putch(ENTER);
-                cmd[ncmd] = '\0';
-                exec(cmd);
+                cmd[cur][ncmd] = '\0';
+                exec(cmd[cur]);
+                tail = cur = next(cur);
+                if (tail == head) {
+                    head = next(head);
+                }
                 ncmd = 0;
+                cmd[cur][ncmd] = '\0';
                 putstr(PROMPT);
                 break;
             }
             default: {
                 if (ncmd < 29) {
                     putch(key);
-                    cmd[ncmd ++] = (char)key;
+                    cmd[cur][ncmd ++] = (char)key;
                 }
                 break;
             }

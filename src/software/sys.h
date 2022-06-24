@@ -8,6 +8,10 @@
 #define LINE_ADDR    0x00500000
 #define COLOR_ADDR   0x00500004
 
+#define KEY_LEFT 180
+#define KEY_RIGH 182
+#define KEY_UP   184
+#define KEY_DW   178
 #define BACKSPACE 8
 #define ENTER 13
 
