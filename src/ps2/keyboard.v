@@ -7,7 +7,7 @@ module keyboard(
 
 
 wire ready, overflow;
-reg is_brk, nextdata_n, long_pressing;
+reg is_brk, nextdata_n;
 wire [7:0] keydata;
 
 initial begin

@@ -126,7 +126,8 @@ wire [4:0] vrdaddr_v;
 
 // KBD
 reg nextdata_n;
-wire [7:0] keydata, kfifodata;
+wire [7:0] keydata; // , kfifodata;
+reg [7:0] kfifodata;
 wire rdempty, wrfull, ready, overflow;
 
 // CLK
@@ -269,22 +270,41 @@ clk_slow as_clk(
 	.out(clk_as)
 );
 
-ascii_cnt my_cnt(
-	.clk(clk_as),
-	.en(kbden),
-	.ascii(keydata)
-);
+reg [12:0] wjp_cnt;
+reg [7:0] key_code;
+reg state;
 
-kfifo my_fifo(
-	.data(keydata),
-	.rdclk(drdclk),
-	.rdreq(key_rd),
-	.wrclk(kbden),
-	.wrreq(1'b1),
-	.q(kfifodata),
-	.rdempty(rdempty),
-	.wrfull(wrfull)
-);
+always @(negedge drdclk) begin
+	if (wjp_cnt == 13'd999) begin
+		wjp_cnt <= 0;
+		state <= ~state;
+	end else begin
+		wjp_cnt <= wjp_cnt + 8'd1;
+	end
+
+	if (state) begin
+		kfifodata <= keydata;
+	end else begin
+		kfifodata <= 0;
+	end
+
+	if (key_rd) begin
+		kfifodata <= 0;
+	end
+end
+
+assign rdempty = 1'b1; 
+
+// kfifo my_fifo(
+// 	.data(keydata),
+// 	.rdclk(drdclk),
+// 	.rdreq(key_rd),
+// 	.wrclk(~clk_as),
+// 	.wrreq(1'b1),
+// 	.q(kfifodata),
+// 	.rdempty(rdempty),
+// 	.wrfull(wrfull)
+// );
 
 // for kfifo test
 reg [4:0] kbden_cnt;
@@ -296,7 +316,8 @@ assign LEDR[4:0] = kbden_cnt;
 assign LEDR[5] = kbden;
 // end of fifo test
 
-assign keymemout = rdempty ? 8'b0 : kfifodata;
+//assign keymemout = rdempty ? 8'b0 : kfifodata;
+assign keymemout = kfifodata;
 
 // CLK
 clkgen #(25000000) my_clk(

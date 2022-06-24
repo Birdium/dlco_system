@@ -6,7 +6,7 @@ module clk_slow(
 reg [15:0] cnt;
 
 always @ (posedge clk) begin
-	if (cnt == 499) begin
+	if (cnt == 49) begin
 		out <= ~out;
 		cnt <= 0;
 	end
