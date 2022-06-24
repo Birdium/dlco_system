@@ -48,7 +48,7 @@ always @ (negedge clk) begin
 					else if (upcoming_dir) begin
 						upcoming_dir <= 0;
 						is_dir <= 0;
-						// cur_key <= 8'h0;
+						cur_key <= 8'h0;
 					end
 					else if (keydata == 8'h14) begin
 						ctrl <= 0;
@@ -78,7 +78,7 @@ always @ (negedge clk) begin
 				else if (upcoming_dir) begin
 					upcoming_dir <= 0;
 					is_dir <= 1;
-					// cur_key <= keydata;
+					cur_key <= keydata;
 				end
 				else cur_key <= keydata;
 			end
@@ -107,6 +107,6 @@ data2ascii ascii_inst(
 	.uppercase(shift^caps)
 );
 
-assign ascii_key = raw_ascii | {is_dir, 7'b0};
+assign ascii_key = raw_ascii;// | {is_dir, 7'b0};
 
 endmodule
