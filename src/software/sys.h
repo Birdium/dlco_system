@@ -15,11 +15,10 @@ void putstr(const char* str);
 void putch(char ch);
 int gettimeofday(); 
 
-int readkey();
+char readkey();
+
+void blink();
 
 void vga_init(void);
-
-void printf (const char *format, ...);
-void puts(const char *str);
 
 void sleep(int tm);

@@ -52,16 +52,18 @@ unsigned int __udivsi3(unsigned int a, unsigned int b) {
  * 溢出是UB
  */
 int __divsi3(int a, int b) {
-    if (a > 0 && b > 0) {
-        return __udivsi3(a, b);
-    } else if (a < 0 && b < 0) {
-        return __udivsi3(-a, -b);
-    } else if (a > 0) {
-        return __udivsi3(a, -b);
-    } else return __udivsi3(-a, b);
+    if (a == 0 || b == 0) return 0;
+    if (a < 0 && b < 0) {
+        a = -a; b = -b;
+    } else if (a > 0 && b < 0) {
+        b = -b;
+    } else if (a < 0 && b > 0) {
+        a = -a;
+    }
+    return (int)__udivsi3((unsigned)a, (unsigned)b);
 }
 
 int __modsi3(int a, int b) {
     int c = __divsi3(a, b);
-    return a - __mulsi3(b, c);
+    return a - (int)__mulsi3((unsigned)b, (unsigned)c);
 }

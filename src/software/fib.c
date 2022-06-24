@@ -1,4 +1,4 @@
-#include "stdio.h"
+#include "kstdio.h"
 
 void exec_fib(const char *cmd) {
     while (*cmd == ' ') cmd ++;
@@ -12,5 +12,5 @@ void exec_fib(const char *cmd) {
         b = a + b;
         a = b - a;
     } 
-    printf("%d\n", b);
+    kprintf("%d\n", b);
 }

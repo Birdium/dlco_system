@@ -3,7 +3,7 @@ default: all
 XLEN ?= 64
 RISCV_PREFIX ?= riscv$(XLEN)-unknown-elf-
 RISCV_GCC ?= $(RISCV_PREFIX)gcc
-GCC_WARNS := -Wall -Wextra -Wconversion -pedantic -Wcast-qual -Wcast-align -Wwrite-strings
+GCC_WARNS := -Wall -Wextra -Werror -Wconversion -pedantic -Wcast-qual -Wcast-align -Wwrite-strings
 RISCV_GCC_OPTS ?= -static -mcmodel=medany -fvisibility=hidden -Tsections.ld -nostdlib -nostartfiles -march=rv32i -mabi=ilp32 -I. ${GCC_WARNS}
 RISCV_OBJDUMP ?= $(RISCV_PREFIX)objdump --disassemble-all --disassemble-zeroes
 	--section=.text --section=.text.startup --section=.text.init
@@ -30,24 +30,24 @@ SRC_PATH := $(SOFTWARE_PATH)/..
 MEM_PATH := $(SRC_PATH)/mem
 
 .c.o:
-	$(RISCV_GCC) -c $(RISCV_GCC_OPTS)  $< -o $@
+	@$(RISCV_GCC) -c $(RISCV_GCC_OPTS)  $< -o $@
 
 ${EXEC}.elf : $(OBJS)
-	${RISCV_GCC}  ${RISCV_GCC_OPTS} -e entry $(OBJS) -o $@
-	${RISCV_OBJDUMP} ${EXEC}.elf > ${EXEC}.dump
+	@${RISCV_GCC}  ${RISCV_GCC_OPTS} -e entry $(OBJS) -o $@
+	@${RISCV_OBJDUMP} ${EXEC}.elf > ${EXEC}.dump
 
 ${EXEC}.tmp: ${EXEC}.elf
-	$(RISCV_OBJCOPY) $<  $@
+	@$(RISCV_OBJCOPY) $<  $@
 
 ${EXEC}.hex: ${EXEC}.tmp
-	awk -v code=1 $(RISCV_HEXGEN) $< > $@
-	awk -v code=0 $(RISCV_HEXGEN) $< > ${EXEC}_d.hex
+	@awk -v code=1 $(RISCV_HEXGEN) $< > $@
+	@awk -v code=0 $(RISCV_HEXGEN) $< > ${EXEC}_d.hex
 
 ${EXEC}.mif: ${EXEC}.hex
-	awk -v depth=65536 ${RISCV_MIFGEN} $< > $@
-	awk -v depth=32768 ${RISCV_MIFGEN} ${EXEC}_d.hex > ${EXEC}_d.mif
-	cp ${EXEC}.mif ${MEM_PATH}/imem.mif
-	cp ${EXEC}_d.mif ${MEM_PATH}/dmem.mif
+	@awk -v depth=65536 ${RISCV_MIFGEN} $< > $@
+	@awk -v depth=32768 ${RISCV_MIFGEN} ${EXEC}_d.hex > ${EXEC}_d.mif
+	@cp ${EXEC}.mif ${MEM_PATH}/imem.mif
+	@cp ${EXEC}_d.mif ${MEM_PATH}/dmem.mif
 
 .PHONY: all clean
 

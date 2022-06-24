@@ -4,7 +4,7 @@
 static void putu_(unsigned x) {
   if (x == 0) return ;
   putu_(x / 10);
-  putch('0' + x % 10);
+  putch('0' + (char)(x % 10));
 }
 
 static void putu(unsigned x) {
@@ -17,10 +17,10 @@ static void puti(int x) {
     x = -x;
     putch('-');
   }
-  putu(x);
+  putu((unsigned)x);
 }
 
-void printf(const char *fmt, ...) {
+void kprintf(const char *fmt, ...) {
   va_list ap; va_start(ap, fmt);
   for (const char *s = fmt; *s != '\0'; s ++) {
     if (*s != '%') {
@@ -30,7 +30,7 @@ void printf(const char *fmt, ...) {
     s ++;
     switch (*s) {
       case '%': putch('%');                       break;
-      case 'c': putch(va_arg(ap, int));           break;
+      case 'c': putch((char)va_arg(ap, int));           break;
       case 'u': putu(va_arg(ap, unsigned));       break;
       case 'd': puti(va_arg(ap, int));            break;
       case 's': putstr(va_arg(ap, const char *)); break;
@@ -39,6 +39,6 @@ void printf(const char *fmt, ...) {
   va_end(ap);
 }
 
-void puts(const char *str) {
+void kputs(const char *str) {
   putstr(str);
 }

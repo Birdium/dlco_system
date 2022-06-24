@@ -38,7 +38,7 @@ void vga_roll(){
 }
 
 void blink() {
-  static int ch = 0;
+  static char ch = 0;
   ch = (!ch) ? 0x5F : 0;
   VGA_CUR = ch;
 }
@@ -80,11 +80,11 @@ void putch(char ch) {
 }
 
 void putstr(const char *str){
-  for (char *p = str; *p; p ++) {
+  for (const char *p = str; *p; p ++) {
     putch(*p);
   }
 }
 
-int readkey() {
-  return *key;
+char readkey() {
+  return (char)(*key);
 }

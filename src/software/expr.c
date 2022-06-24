@@ -1,22 +1,18 @@
-#include "stdio.h"
+#include "kstdio.h"
+#include "kstring.h"
 
 #define NR_TOKENS 255
-#define NR_OPS (sizeof(ops) / sizeof(ops[0]))
 
 typedef struct token_t {
     enum {
         TOKEN_NUM,
         TOKEN_CHAR,
     } type;
-    char ch;
+    int ch;
     int val;
 } token_t;
 
 token_t tokens[NR_TOKENS];
-
-static char ops[] = {
-    '^', '*', '/', '+', '-'
-} ;
 
 static int prior[] = {
     ['^'] = 5,
@@ -29,7 +25,7 @@ static int prior[] = {
 
 int ntok = 0;
 
-const int next_bracket(int i) {
+int next_bracket(int i) {
     int cnt = 1;
     for (i ++; cnt; i ++) {
         if (tokens[i].type != TOKEN_CHAR)
@@ -96,6 +92,7 @@ int eval(const int l, const int r) {
         case '+': return     lexpr + rexpr;
         case '-': return     lexpr - rexpr;
     }
+    return 0;
 }
 
 void parse(const char *expr, int len) {
@@ -134,6 +131,6 @@ void parse(const char *expr, int len) {
 void exec_eval(const char *cmd) {
     while (*cmd == ' ') cmd ++;
     ntok = 0;
-    parse(cmd, strlen(cmd));
-    printf("%d\n", eval(0, ntok));
+    parse(cmd, kstrlen(cmd));
+    kprintf("%d\n", eval(0, ntok));
 }

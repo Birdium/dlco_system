@@ -1,7 +1,7 @@
 #include "sys.h"
 
-#include "stdio.h"
-#include "string.h"
+#include "kstdio.h"
+#include "kstring.h"
 
 #define PROMPT "Nyan>"
 
@@ -15,7 +15,7 @@ void entry() {
 }
 
 // + sizeof(#str) 是为了跳过命令 "cmd args" 的前缀，把 args 作为参数传入 exec_##str
-#define CMD_EXEC(str) if (!strncmp(cmd, #str, sizeof(#str))) { \
+#define CMD_EXEC(str) if (!kstrncmp(cmd, #str, sizeof(#str))) { \
     exec_##str(cmd + sizeof(#str)); \
     return 0; }
 #define CMD_DEF( str) void exec_##str(const char *cmd);
@@ -25,13 +25,14 @@ COMMANDS(CMD_DEF)
 
 int exec(const char *cmd) {
     COMMANDS(CMD_EXEC);
-    printf("%s: command not found\n", cmd);
+    kprintf("%s: command not found\n", cmd);
     return 1;
 }
 
 int main() {
     static char cmd[255];
-    int ncmd = 0, key = 0, uptime = gettimeofday();
+    int ncmd = 0, uptime = gettimeofday();
+    char key;
 
     vga_init();
     putstr(PROMPT);
@@ -61,7 +62,7 @@ int main() {
             }
             default: {
                 putch(key);
-                cmd[ncmd ++] = key;
+                cmd[ncmd ++] = (char)key;
                 break;
             }
         }
