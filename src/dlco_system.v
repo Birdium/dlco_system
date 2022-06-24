@@ -111,8 +111,8 @@ assign cpu_data	=
  (daddr[31:20] == 12'h001)? ddataout: // 选取dmem输出
 ((daddr[31:20] == 12'h003)? keymemout : // 键盘输出
 ((daddr[31:20] == 12'h004)? ms_cnt : // 时钟输出
-((daddr == 32'h00500000)? {27'b0, start_line} :
-((daddr == 32'h00500004)? ms_cnt : 32'b0 )))); // 起始行号寄存器(read only)
+((daddr == 32'h00500000)? {27'b0, start_line} : // 起始行号寄存器(read only)
+((daddr == 32'h00500004)? ms_cnt : 32'b0 )))); // 字符颜色寄存器
 
 // VGA + vmem
 wire [11:0] vga_data;
@@ -251,12 +251,15 @@ wire shift, caps, ctrl, alt, is_dir; // kbd ctrl signals
 wire clk_as; // ascii_cnt's clk
 wire kbden; // fifo wrreq
 
+wire [7:0] raw_keydata;
+assign keydata = {is_dir, raw_keydata[6:0]};
+
 keyboard kbd_inst(
 	.clk(kbdclk),
 	.clrn(~rst),
 	.ps2_clk(PS2_CLK),
 	.ps2_data(PS2_DAT),
-	.ascii_key(keydata),
+	.ascii_key(raw_keydata),
 	.shift(shift),
 	.caps(caps),
 	.ctrl(ctrl),
