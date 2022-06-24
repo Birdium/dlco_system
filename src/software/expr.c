@@ -132,15 +132,26 @@ void parse(const char *expr, int len) {
     }
 }
 
+#ifdef DEBUG
+
 #include <stdio.h>
 #include <string.h>
+
+#endif
 
 void exec_eval(const char *cmd) {
     while (*cmd == ' ') cmd ++;
     ntok = 0;
+#ifdef DEBUG
     parse(cmd, strlen(cmd));
     printf("%d\n", eval(0, ntok));
+#else
+    parse(cmd, kstrlen(cmd));
+    kprintf("%d\n", eval(0, ntok));
+#endif
 }
+
+#ifdef DEBUG
 
 int main() {
     static char s[255];
@@ -149,3 +160,5 @@ int main() {
         exec_eval(s);
     }
 }
+
+#endif
