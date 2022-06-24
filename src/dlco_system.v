@@ -251,15 +251,12 @@ wire shift, caps, ctrl, alt, is_dir; // kbd ctrl signals
 wire clk_as; // ascii_cnt's clk
 wire kbden; // fifo wrreq
 
-wire [7:0] raw_keydata;
-assign keydata = {is_dir, raw_keydata[6:0]};
-
 keyboard kbd_inst(
 	.clk(kbdclk),
 	.clrn(~rst),
 	.ps2_clk(PS2_CLK),
 	.ps2_data(PS2_DAT),
-	.ascii_key(raw_keydata),
+	.ascii_key(keydata),
 	.shift(shift),
 	.caps(caps),
 	.ctrl(ctrl),
