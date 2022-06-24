@@ -6,13 +6,13 @@
 #define VGA(line, ch) vga_start[(((*start_line) + line) << 7) + (ch)]
 
 char* vga_start = (char*) VGA_START;
-int*  time = (int*) CLK_ADDR;
+unsigned*  time = (unsigned*) CLK_ADDR;
 int*  start_line = (int*) LINE_ADDR;
 int*  key  = (int*) KEY_REG;
 int   vga_line=0;
 int   vga_ch=0;
 
-int gettimeofday(){
+unsigned gettimeofday(){
   return *time;
 }
 

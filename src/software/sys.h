@@ -1,3 +1,8 @@
+#ifndef __MYSYS_H__
+#define __MYSYS_H__
+
+#include <limits.h>
+
 #define VGA_START    0x00200000
 #define VGA_MAXLINE  30
 #define VGA_MAXCOL   70
@@ -17,7 +22,7 @@
 
 void putstr(const char* str);
 void putch(char ch);
-int gettimeofday(); 
+unsigned gettimeofday(); 
 
 char readkey();
 void vga_roll();
@@ -27,3 +32,5 @@ void blink();
 void vga_init(void);
 
 void sleep(int tm);
+
+#endif

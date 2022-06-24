@@ -4,7 +4,7 @@ XLEN ?= 64
 RISCV_PREFIX ?= riscv$(XLEN)-unknown-elf-
 RISCV_GCC ?= $(RISCV_PREFIX)gcc
 GCC_WARNS := -Wall -Wextra -Werror -Wconversion -pedantic -Wcast-qual -Wcast-align -Wwrite-strings
-RISCV_GCC_OPTS ?= -static -mcmodel=medany -fvisibility=hidden -Tsections.ld -nostdlib -nostartfiles -march=rv32i -mabi=ilp32 -I. ${GCC_WARNS}
+RISCV_GCC_OPTS ?= -static -mcmodel=medany -fvisibility=hidden -Tsections.ld -nostdlib -nostartfiles -march=rv32i -mabi=ilp32 ${GCC_WARNS}
 RISCV_OBJDUMP ?= $(RISCV_PREFIX)objdump --disassemble-all --disassemble-zeroes
 	--section=.text --section=.text.startup --section=.text.init
 	--section=.data

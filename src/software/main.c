@@ -41,8 +41,9 @@ int exec(const char *cmd) {
 
 int main() {
     static char cmd[NR_LINE][NR_COL];
-    int ncmd = 0, uptime = gettimeofday();
+    int ncmd = 0;
     int head = 0, tail = 0, cur = 0;
+    unsigned uptime = gettimeofday();
     char key;
 
     vga_init();

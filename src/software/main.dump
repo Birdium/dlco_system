@@ -129,23 +129,23 @@ Disassembly of section .text:
      1c4:	02812423          	sw	s0,40(sp)
      1c8:	03010413          	addi	s0,sp,48
      1cc:	fe042623          	sw	zero,-20(s0)
-     1d0:	4f8010ef          	jal	ra,16c8 <gettimeofday>
-     1d4:	fea42423          	sw	a0,-24(s0)
+     1d0:	fe042423          	sw	zero,-24(s0)
+     1d4:	fc042e23          	sw	zero,-36(s0)
      1d8:	fe042223          	sw	zero,-28(s0)
-     1dc:	fc042e23          	sw	zero,-36(s0)
-     1e0:	fe042023          	sw	zero,-32(s0)
+     1dc:	4ec010ef          	jal	ra,16c8 <gettimeofday>
+     1e0:	fea42023          	sw	a0,-32(s0)
      1e4:	57c010ef          	jal	ra,1760 <vga_init>
      1e8:	00100517          	auipc	a0,0x100
      1ec:	e5450513          	addi	a0,a0,-428 # 10003c <_etext+0xfe3e0>
      1f0:	1dd010ef          	jal	ra,1bcc <putstr>
      1f4:	4d4010ef          	jal	ra,16c8 <gettimeofday>
      1f8:	00050713          	mv	a4,a0
-     1fc:	fe842783          	lw	a5,-24(s0)
+     1fc:	fe042783          	lw	a5,-32(s0)
      200:	40f70733          	sub	a4,a4,a5
      204:	3e800793          	li	a5,1000
-     208:	00e7d863          	bge	a5,a4,218 <main+0x5c>
+     208:	00e7f863          	bgeu	a5,a4,218 <main+0x5c>
      20c:	4bc010ef          	jal	ra,16c8 <gettimeofday>
-     210:	fea42423          	sw	a0,-24(s0)
+     210:	fea42023          	sw	a0,-32(s0)
      214:	688010ef          	jal	ra,189c <blink>
      218:	215010ef          	jal	ra,1c2c <readkey>
      21c:	00050793          	mv	a5,a0
@@ -167,8 +167,8 @@ Disassembly of section .text:
      25c:	00800713          	li	a4,8
      260:	0ce78063          	beq	a5,a4,320 <main+0x164>
      264:	1e40006f          	j	448 <main+0x28c>
-     268:	fe042703          	lw	a4,-32(s0)
-     26c:	fe442783          	lw	a5,-28(s0)
+     268:	fe442703          	lw	a4,-28(s0)
+     26c:	fe842783          	lw	a5,-24(s0)
      270:	24f70063          	beq	a4,a5,4b0 <main+0x2f4>
      274:	0180006f          	j	28c <main+0xd0>
      278:	00800513          	li	a0,8
@@ -178,13 +178,13 @@ Disassembly of section .text:
      288:	fef42623          	sw	a5,-20(s0)
      28c:	fec42783          	lw	a5,-20(s0)
      290:	fe0794e3          	bnez	a5,278 <main+0xbc>
-     294:	fe042503          	lw	a0,-32(s0)
+     294:	fe442503          	lw	a0,-28(s0)
      298:	da9ff0ef          	jal	ra,40 <prev>
-     29c:	fea42023          	sw	a0,-32(s0)
+     29c:	fea42223          	sw	a0,-28(s0)
      2a0:	0480006f          	j	2e8 <main+0x12c>
      2a4:	00101697          	auipc	a3,0x101
      2a8:	da468693          	addi	a3,a3,-604 # 101048 <cmd.0>
-     2ac:	fe042703          	lw	a4,-32(s0)
+     2ac:	fe442703          	lw	a4,-28(s0)
      2b0:	00070793          	mv	a5,a4
      2b4:	00379793          	slli	a5,a5,0x3
      2b8:	40e787b3          	sub	a5,a5,a4
@@ -201,7 +201,7 @@ Disassembly of section .text:
      2e4:	fef42623          	sw	a5,-20(s0)
      2e8:	00101697          	auipc	a3,0x101
      2ec:	d6068693          	addi	a3,a3,-672 # 101048 <cmd.0>
-     2f0:	fe042703          	lw	a4,-32(s0)
+     2f0:	fe442703          	lw	a4,-28(s0)
      2f4:	00070793          	mv	a5,a4
      2f8:	00379793          	slli	a5,a5,0x3
      2fc:	40e787b3          	sub	a5,a5,a4
@@ -220,7 +220,7 @@ Disassembly of section .text:
      330:	604010ef          	jal	ra,1934 <putch>
      334:	00101697          	auipc	a3,0x101
      338:	d1468693          	addi	a3,a3,-748 # 101048 <cmd.0>
-     33c:	fe042703          	lw	a4,-32(s0)
+     33c:	fe442703          	lw	a4,-28(s0)
      340:	00070793          	mv	a5,a4
      344:	00379793          	slli	a5,a5,0x3
      348:	40e787b3          	sub	a5,a5,a4
@@ -238,7 +238,7 @@ Disassembly of section .text:
      378:	5bc010ef          	jal	ra,1934 <putch>
      37c:	00101697          	auipc	a3,0x101
      380:	ccc68693          	addi	a3,a3,-820 # 101048 <cmd.0>
-     384:	fe042703          	lw	a4,-32(s0)
+     384:	fe442703          	lw	a4,-28(s0)
      388:	00070793          	mv	a5,a4
      38c:	00379793          	slli	a5,a5,0x3
      390:	40e787b3          	sub	a5,a5,a4
@@ -248,7 +248,7 @@ Disassembly of section .text:
      3a0:	fec42783          	lw	a5,-20(s0)
      3a4:	00f707b3          	add	a5,a4,a5
      3a8:	00078023          	sb	zero,0(a5)
-     3ac:	fe042703          	lw	a4,-32(s0)
+     3ac:	fe442703          	lw	a4,-28(s0)
      3b0:	00070793          	mv	a5,a4
      3b4:	00379793          	slli	a5,a5,0x3
      3b8:	40e787b3          	sub	a5,a5,a4
@@ -259,21 +259,21 @@ Disassembly of section .text:
      3cc:	00e787b3          	add	a5,a5,a4
      3d0:	00078513          	mv	a0,a5
      3d4:	cddff0ef          	jal	ra,b0 <exec>
-     3d8:	fe042503          	lw	a0,-32(s0)
+     3d8:	fe442503          	lw	a0,-28(s0)
      3dc:	c25ff0ef          	jal	ra,0 <next>
-     3e0:	fea42023          	sw	a0,-32(s0)
-     3e4:	fe042783          	lw	a5,-32(s0)
+     3e0:	fea42223          	sw	a0,-28(s0)
+     3e4:	fe442783          	lw	a5,-28(s0)
      3e8:	fcf42e23          	sw	a5,-36(s0)
      3ec:	fdc42703          	lw	a4,-36(s0)
-     3f0:	fe442783          	lw	a5,-28(s0)
+     3f0:	fe842783          	lw	a5,-24(s0)
      3f4:	00f71863          	bne	a4,a5,404 <main+0x248>
-     3f8:	fe442503          	lw	a0,-28(s0)
+     3f8:	fe842503          	lw	a0,-24(s0)
      3fc:	c05ff0ef          	jal	ra,0 <next>
-     400:	fea42223          	sw	a0,-28(s0)
+     400:	fea42423          	sw	a0,-24(s0)
      404:	fe042623          	sw	zero,-20(s0)
      408:	00101697          	auipc	a3,0x101
      40c:	c4068693          	addi	a3,a3,-960 # 101048 <cmd.0>
-     410:	fe042703          	lw	a4,-32(s0)
+     410:	fe442703          	lw	a4,-28(s0)
      414:	00070793          	mv	a5,a4
      418:	00379793          	slli	a5,a5,0x3
      41c:	40e787b3          	sub	a5,a5,a4
@@ -298,7 +298,7 @@ Disassembly of section .text:
      468:	fef42623          	sw	a5,-20(s0)
      46c:	00101617          	auipc	a2,0x101
      470:	bdc60613          	addi	a2,a2,-1060 # 101048 <cmd.0>
-     474:	fe042703          	lw	a4,-32(s0)
+     474:	fe442703          	lw	a4,-28(s0)
      478:	00070793          	mv	a5,a4
      47c:	00379793          	slli	a5,a5,0x3
      480:	40e787b3          	sub	a5,a5,a4
