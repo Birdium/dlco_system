@@ -8,6 +8,9 @@
 #define LINE_ADDR    0x00500000
 #define COLOR_ADDR   0x00500004
 
+#define BACKSPACE 8
+#define ENTER 10
+
 void putstr(const char* str);
 void putch(char ch);
 int gettimeofday(); 

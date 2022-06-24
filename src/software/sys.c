@@ -5,9 +5,6 @@
 
 #define VGA(line, ch) vga_start[(((*start_line) + line) << 7) + (ch)]
 
-#define BACKSPACE 8
-#define ENTER 10
-
 char* vga_start = (char*) VGA_START;
 int*  time = (int*) CLK_ADDR;
 int*  start_line = (int*) LINE_ADDR;
@@ -38,6 +35,12 @@ void vga_roll(){
   for(int j=0;j<VGA_MAXCOL;j++){
     VGA(VGA_MAXLINE-1, j) = 0;
   }
+}
+
+void blink() {
+  static int ch = 0;
+  ch = (!ch) ? 0x5F : 0;
+  VGA_CUR = ch;
 }
 
 void putch(char ch) {

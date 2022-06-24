@@ -3,9 +3,7 @@
 #include "stdio.h"
 #include "string.h"
 
-char hello[]="Hello World!\n\0";
-char nyan[]="Nyan!\n\0";
-char nunhehheh[]="Nunhehhehaaaaaaaaaahhh!\n\0";
+#define PROMPT "Nyan>"
 
 int main();
 
@@ -28,20 +26,40 @@ void exec(const char *cmd) {
 }
 
 int main() {
-    vga_init();
-
     static char cmd[255];
-    int ncmd = 0;
-    putstr(nyan);
+    int ncmd = 0, key = 0, uptime = gettimeofday();
 
-    while (1) {
-        // sleep(1);
-        int key = readkey();
-        cmd[ncmd ++] = key;
-        putch(key);
+    vga_init();
+    putstr(PROMPT);
 
-        if (key == 10) { // \n
-            exec(cmd);
+    for (; ; ) {
+        if (gettimeofday() - uptime > 1000) {
+            uptime = gettimeofday();
+            blink();
+        }
+        switch (key = readkey()) {
+            case 0: {
+                break;
+            }
+            case BACKSPACE: {
+                if (ncmd) {
+                    putch(key);
+                    ncmd --;
+                }
+                break;
+            }
+            case ENTER: {
+                cmd[ncmd] = '\0';
+                exec(cmd);
+                ncmd = 0;
+                putstr(PROMPT);
+                break;
+            }
+            default: {
+                putch(key);
+                cmd[ncmd ++] = key;
+                break;
+            }
         }
     }
     return 0;
