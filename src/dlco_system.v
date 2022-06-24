@@ -110,9 +110,9 @@ assign key_rd	=(daddr[31:20] == 12'h003);
 assign cpu_data	=
  (daddr[31:20] == 12'h001)? ddataout: // 选取dmem输出
 ((daddr[31:20] == 12'h003)? keymemout : // 键盘输出
-((daddr[31:20] == 12'h004)? ms_cnt : // 时钟输出
+((daddr[31:20] == 12'h004)? us_cnt : // 时钟输出
 ((daddr == 32'h00500000)? {27'b0, start_line} : // 起始行号寄存器(read only)
-((daddr == 32'h00500004)? ms_cnt : 32'b0 )))); // 字符颜色寄存器
+((daddr == 32'h00500004)? us_cnt : 32'b0 )))); // 字符颜色寄存器
 
 // VGA + vmem
 wire [11:0] vga_data;
@@ -308,14 +308,14 @@ clkgen #(25000000) my_clk(
 	.clkout(clk)
 );
 
-reg [31:0] ms_cnt, clock_cnt;
+reg [31:0] us_cnt, clock_cnt;
 initial begin 
-	ms_cnt <= 32'b0;
+	us_cnt <= 32'b0;
 	clock_cnt <= 32'b0;
 end
 always @(posedge CLOCK_50) begin
-	if (clock_cnt == 12499) begin
-		ms_cnt <= ms_cnt + 1;
+	if (clock_cnt == 49) begin
+		us_cnt <= us_cnt + 1;
 		clock_cnt <= 32'b0;
 	end
 	else clock_cnt <= clock_cnt + 1;
