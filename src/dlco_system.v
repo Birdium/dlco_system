@@ -279,12 +279,22 @@ kfifo my_fifo(
 	.data(keydata),
 	.rdclk(drdclk),
 	.rdreq(key_rd),
-	.wrclk(~clk_as),
-	.wrreq(kbden),
+	.wrclk(kbden),
+	.wrreq(1'b1),
 	.q(kfifodata),
 	.rdempty(rdempty),
 	.wrfull(wrfull)
 );
+
+// for kfifo test
+reg [4:0] kbden_cnt;
+initial kbden_cnt = 5'b0;
+always @ (posedge key_rd) begin
+	kbden_cnt <= kbden_cnt + 1;
+end
+assign LEDR[4:0] = kbden_cnt;
+assign LEDR[5] = kbden;
+// end of fifo test
 
 assign keymemout = rdempty ? 8'b0 : kfifodata;
 
