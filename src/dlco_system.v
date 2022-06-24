@@ -126,8 +126,7 @@ wire [4:0] vrdaddr_v;
 
 // KBD
 reg nextdata_n;
-wire [7:0] keydata; // , kfifodata;
-reg [7:0] kfifodata;
+wire [7:0] keydata, kfifodata;
 wire rdempty, wrfull, ready, overflow;
 
 // CLK
