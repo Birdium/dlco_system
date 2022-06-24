@@ -50,7 +50,7 @@ int main() {
     putstr(PROMPT);
 
     for (; ; ) {
-        if (gettimeofday() - uptime > 1000) {
+        if (gettimeofday() - uptime > 1000000) {
             uptime = gettimeofday();
             blink();
         }
