@@ -107,6 +107,6 @@ data2ascii ascii_inst(
 	.uppercase(shift^caps)
 );
 
-assign ascii_key = raw_ascii;// | {is_dir, 7'b0};
+assign ascii_key = raw_ascii | {is_dir, 7'b0};
 
 endmodule
