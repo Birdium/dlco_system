@@ -7,6 +7,8 @@
 #define NR_LINE 35
 #define NR_COL  55
 
+static char cmd[NR_LINE][NR_COL + 5];
+
 int main();
 
 //setup the entry point
@@ -24,7 +26,6 @@ static int prev(int x) {
     return (x + NR_LINE - 1) % NR_LINE;
 }
 
-
 // + sizeof(#str) 是为了跳过命令 "cmd args" 的前缀，把 args 作为参数传入 exec_##str
 #define CMD_EXEC(str) if (!kstrncmp(cmd, #str, sizeof(#str) - 1)) { \
     exec_##str(cmd + sizeof(#str)); \
@@ -40,8 +41,22 @@ int exec(const char *cmd) {
     return 1;
 }
 
+int clear_line(int ncmd) {
+    for (; ncmd; ncmd --) {
+        putch(BACKSPACE);
+    }
+    return 0;
+}
+
+int print_line(int cur) {
+    int ncmd = 0;
+    for (; cmd[cur][ncmd]; ncmd ++) {
+        putch(cmd[cur][ncmd]);
+    }
+    return ncmd;
+}
+
 int main() {
-    static char cmd[NR_LINE][NR_COL];
     int ncmd = 0;
     int head = 0, tail = 0, cur = 0;
     unsigned uptime = gettimeofday();
@@ -59,24 +74,24 @@ int main() {
             case 0: break;
             case KEY_UP: {
                 if (cur != head) {
-                    for (; ncmd; ncmd --) {
-                        putch(BACKSPACE);
-                    }
+                    ncmd = clear_line(ncmd);
                     cur = prev(cur);
-                    for (; cmd[cur][ncmd]; ncmd ++) {
-                        putch(cmd[cur][ncmd]);
-                    }
+                    ncmd = print_line(cur);
                 }
                 break;
             }
             case KEY_DW: {
+                if (cur != tail) {
+                    ncmd = clear_line(ncmd);
+                    cur = next(cur);
+                    ncmd = print_line(cur);
+                }
                 break;
             }
             case BACKSPACE: {
                 if (ncmd) {
                     putch(key);
-                    cmd[cur][ncmd] = '\0';
-                    ncmd --;
+                    cmd[cur][-- ncmd] = '\0';
                 }
                 break;
             }
@@ -89,12 +104,14 @@ int main() {
                     head = next(head);
                 }
                 ncmd = 0;
-                cmd[cur][ncmd] = '\0';
+                for (int i = 0; i < NR_COL; ++ i) {
+                    cmd[cur][i] = '\0';
+                }
                 putstr(PROMPT);
                 break;
             }
             default: {
-                if (ncmd < 29) {
+                if (ncmd < NR_COL) {
                     putch(key);
                     cmd[cur][ncmd ++] = (char)key;
                 }

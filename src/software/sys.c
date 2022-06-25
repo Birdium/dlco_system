@@ -56,6 +56,7 @@ void putch(char ch) {
                 vga_ch = VGA_MAXCOL - 1;
         }
         else vga_ch--;
+        VGA_CUR = 0;
       }
       break;
     case ENTER:
