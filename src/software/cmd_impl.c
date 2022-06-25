@@ -335,7 +335,7 @@ void exec_devtest(__attribute__((unused)) const char *cmd) {
             default: break;
         }
         cnt = (cnt+1) % 4;
-        sleep(200000000);
+        sleep(1000000);
         int key = readkey();
         if (key == 'q') status = 0; 
         else if (key == 'w') status = 1; 
@@ -345,7 +345,7 @@ void exec_devtest(__attribute__((unused)) const char *cmd) {
     }
 }
 
-void exec_time(const char *cmd){
+void exec_time(__attribute__((unused))const char *cmd){
     kprintf("%u\n", gettimeofday());
     return;
 }

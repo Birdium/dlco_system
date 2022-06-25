@@ -1724,8 +1724,8 @@ Disassembly of section .text:
     19f8:	00377713          	andi	a4,a4,3
     19fc:	40f707b3          	sub	a5,a4,a5
     1a00:	fef42423          	sw	a5,-24(s0)
-    1a04:	0bebc7b7          	lui	a5,0xbebc
-    1a08:	20078513          	addi	a0,a5,512 # bebc200 <_end+0xbdb7200>
+    1a04:	000f47b7          	lui	a5,0xf4
+    1a08:	24078513          	addi	a0,a5,576 # f4240 <_etext+0xf1778>
     1a0c:	205000ef          	jal	ra,2410 <sleep>
     1a10:	755000ef          	jal	ra,2964 <readkey>
     1a14:	00050793          	mv	a5,a0
