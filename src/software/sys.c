@@ -18,7 +18,7 @@ unsigned gettimeofday(){
 }
 
 void draw(int x, int y, unsigned pixel) {
-  gmem[(x << 7) + y] = pixel;
+  *((unsigned *)((x << 7) + y + GMEM_ADDR)) = pixel;
 }
 
 void swtch() {

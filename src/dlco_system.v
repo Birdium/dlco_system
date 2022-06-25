@@ -97,7 +97,7 @@ wire [31:0] iaddr, idataout, daddr, ddataout, ddata, ddatain, PC;
 wire [31:0] keymemout;
 wire [2:0] dop;
 wire iclk, drdclk, dwrclk;
-wire cpu_we, data_we, vga_we, vga_rollen, key_rd;
+wire cpu_we, data_we, vga_we, vga_rollen, key_rd, gmem_we;
 wire ascii_or_pixel_we;
 
 reg [31:0] cpu_data;
@@ -105,6 +105,7 @@ reg [31:0] cpu_data;
 // instr: 000, data: 001, vga: 002, ps2: 003, ...
 assign data_we	=(daddr[31:20] == 12'h001)? cpu_we : 1'b0;
 assign vga_we	=(daddr[31:20] == 12'h002)? cpu_we : 1'b0;
+assign gmem_we  =(daddr[31:20] == 12'h006)? cpu_we : 1'b0;
 assign vga_rollen	=(daddr == 32'h00500000)? cpu_we : 1'b0; // 起始行号寄存器
 assign ascii_or_pixel_we = (daddr == 32'h00500010) ? cpu_we : 1'b0; // CPU要修改ascii_or_pixel控制寄存器
 
@@ -224,7 +225,7 @@ gmem my_gmem(
 	// 但是板上资源不够，像素4*4合一，分辨率是160*128，低7位为128，共15位
 	.wraddress(daddr[14:0]), 
 	.wrclock(dwrclk),
-	.wren(vga_we),
+	.wren(gmem_we),
 	.q(gdataout)
 );
 

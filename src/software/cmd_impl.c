@@ -194,20 +194,31 @@ void exec_gtest(__attribute__((unused))const char *cmd ) {
     char key;
     unsigned col = 0xFF0000;
     unsigned tm = gettimeofday();
+    draw(0, 0, 0xF); draw(0, 1, 0xF); draw(0, 2, 0xF); draw(0, 3, 0xF);
+    draw(1, 0, 0xF); draw(1, 1, 0xF); draw(1, 2, 0xF); draw(1, 3, 0xF);
+    draw(2, 0, 0xF); draw(2, 1, 0xF); draw(2, 2, 0xF); draw(2, 3, 0xF);
+    draw(3, 0, 0xF); draw(3, 1, 0xF); draw(3, 2, 0xF); draw(3, 3, 0xF);
+    draw(4, 0, 0xF); draw(4, 1, 0xF); draw(4, 2, 0xF); draw(4, 3, 0xF);
+    draw(5, 0, 0xF); draw(5, 1, 0xF); draw(5, 2, 0xF); draw(5, 3, 0xF);
+    int i = 0, j = 0;
     while (1) {
         if ((key = readkey()) == 'q') {
             swtch();
             return ;
         }
 
-        if (gettimeofday() - tm > 1000000) {
+        if (gettimeofday() - tm > 10000) {
             tm = gettimeofday();
             if (col == 0xF) {
                 col = 0xF00;
             } else {
                 col >>= 4;
             }
+            j = (j + 1) & 127;
+            if (!j) {
+                i = (i + 1) & 127;
+            }
         }
-        draw(15, 15, col);
+        draw(i, j, col);
     }
 }
