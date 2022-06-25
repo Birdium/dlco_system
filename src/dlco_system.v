@@ -97,7 +97,7 @@ wire [31:0] iaddr, idataout, daddr, ddataout, ddata, ddatain, PC;
 wire [31:0] keymemout;
 wire [2:0] dop;
 wire iclk, drdclk, dwrclk;
-wire cpu_we, data_we, vga_we, vga_rollen, key_rd, gmem_we;
+wire cpu_we, data_we, vga_we, vga_rollen, key_rd, gmem_we, ledr_we, hex_we;
 wire ascii_or_pixel_we;
 
 reg [31:0] cpu_data;
@@ -325,17 +325,17 @@ handmade_fifo my_fifo(
 	.wrfull(wrfull)
 );
 
-//// for kfifo test
+// for kfifo test
 //reg [4:0] kbden_cnt;
 //initial kbden_cnt = 5'b0;
 //always @ (posedge kbden) begin
 //	kbden_cnt <= kbden_cnt + 1;
 //end
-//assign LEDR[4:0] = kbden_cnt;
-//assign LEDR[5] = kbden;
+// assign LEDR[4:0] = kbden_cnt;
+// assign LEDR[5] = kbden;
 //bcd7seg seg0(keydata[3:0], HEX0);
 //bcd7seg seg1(keydata[7:4], HEX1);
-//// end of fifo test
+// end of fifo test
 
 assign keymemout = rdempty ? 8'b0 : kfifodata;
 
@@ -375,19 +375,18 @@ always @(posedge dwrclk) begin
 end
 
 // HEX and LEDR
-reg [3:0] hex_r[5:0];
 reg [9:0] ledr_r;
-initial begin
-	hex_r[0] = 0; hex_r[1] = 0; hex_r[2] = 0; hex_r[3] = 0; hex_r[4] = 0; hex_r[5] = 0;
-	ledr_r = 0;
+reg [3:0] hex_r[5:0];
+always @ (posedge ledr_we) begin
+	ledr_r[9:0] <= ddatain[9:0];
 end
+
 always @ (posedge dwrclk) begin
-	if (ledr_we) ledr[daddr[3:0]] <= ddatain[0];
+	if (hex_we) hex_r[daddr[2:0]] <= ddatain[3:0];
 end
-always @ (posedge dwrclk) begin
-	if (hex_we) hex[daddr[2:0]] <= ddatain[3:0];
-end
-assign LEDR = ledr_r;
+
+assign LEDR[9:0] = ledr_r[9:0];
+
 bcd7seg seg0(hex_r[0], HEX0);
 bcd7seg seg1(hex_r[1], HEX1);
 bcd7seg seg2(hex_r[2], HEX2);
