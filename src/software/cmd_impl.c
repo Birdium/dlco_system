@@ -222,3 +222,103 @@ void exec_gtest(__attribute__((unused))const char *cmd ) {
         draw(i, j, col);
     }
 }
+
+#define FPS 30
+#define N   32
+
+static inline unsigned pixel(unsigned r, unsigned g, unsigned b) {
+  return (r << 16) | (g << 8) | b;
+}
+static inline unsigned R(unsigned p) { return p >> 16; }
+static inline unsigned G(unsigned p) { return (p >> 8) & 0xFF; }
+static inline unsigned B(unsigned p) { return p & 0xFF; }
+
+static unsigned canvas[N][N];
+static int used[N][N];
+
+static unsigned color_buf[32 * 32];
+
+static unsigned convert(unsigned pixel) {
+    unsigned r = R(pixel) >> 4;
+    unsigned g = G(pixel) >> 4;
+    unsigned b = B(pixel) >> 4;
+    return (r << 8) | (g << 4) | b;
+}
+
+static void redraw() {
+    int w = 160 / N;
+    int h = 128 / N;
+  int block_size = w * h;
+
+  int x, y, k;
+  for (y = 0; y < N; y ++) {
+    for (x = 0; x < N; x ++) {
+      for (k = 0; k < block_size; k ++) {
+        color_buf[k] = convert(canvas[y][x]);
+      }
+      draw_rect(x * w, y * h, color_buf, w, h);
+    }
+  }
+}
+
+static unsigned p(int tsc) {
+  unsigned b = tsc & 0xff;
+  return pixel(b * 6, b * 7, b);
+}
+
+static void update() {
+  static int tsc = 0;
+  static int dx[4] = {0, 1, 0, -1};
+  static int dy[4] = {1, 0, -1, 0};
+
+  tsc ++;
+
+  for (int i = 0; i < N; i ++)
+    for (int j = 0; j < N; j ++) {
+      used[i][j] = 0;
+    }
+
+  int init = tsc * 1;
+  canvas[0][0] = p(init); used[0][0] = 1;
+  int x = 0, y = 0, d = 0;
+  for (int step = 1; step < N * N; step ++) {
+    for (int t = 0; t < 4; t ++) {
+      int x1 = x + dx[d], y1 = y + dy[d];
+      if (x1 >= 0 && x1 < N && y1 >= 0 && y1 < N && !used[x1][y1]) {
+        x = x1; y = y1;
+        used[x][y] = 1;
+        canvas[x][y] = p(init + step / 2);
+        break;
+      }
+      d = (d + 1) % 4;
+    }
+  }
+}
+
+void exec_vtest(__attribute__((unused)) const char *cmd) {
+  swtch();
+  unsigned last = 0;
+  unsigned fps_last = 0;
+  int fps = 0;
+
+  while (1) {
+    unsigned upt = gettimeofday() / 1000;
+    if (readkey() == 'q') {
+        swtch();
+        return ;
+    }
+    if (upt - last > 1000 / FPS) {
+      update();
+      redraw();
+      last = upt;
+      fps ++;
+    }
+    if (upt - fps_last > 1000) {
+      // display fps every 1s
+    //   printf("%d: FPS = %d\n", upt, fps);
+      fps_last = upt;
+      fps = 0;
+    }
+  }
+}
+

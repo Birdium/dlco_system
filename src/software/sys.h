@@ -34,6 +34,7 @@ void blink();
 void vga_init(void);
 void swtch();
 void draw(int x, int y, unsigned pixel);
+void draw_rect(int x, int y, unsigned buf[], int w, int h);
 
 void sleep(unsigned tm);
 

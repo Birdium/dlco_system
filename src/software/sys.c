@@ -17,8 +17,16 @@ unsigned gettimeofday(){
   return *time;
 }
 
-void draw(int x, int y, unsigned pixel) {
+void draw(int y, int x, unsigned pixel) {
   *((unsigned *)((x << 7) + y + GMEM_ADDR)) = pixel;
+}
+
+void draw_rect(int x, int y, unsigned buf[], int w, int h) {
+  for (int i = 0; i < h; ++ i) {
+    for (int j = 0; j < w; ++ j) {
+      draw((y + i), x + j, buf[i * w + j]);
+    }
+  }
 }
 
 void swtch() {
