@@ -105,10 +105,11 @@ reg [31:0] cpu_data;
 // instr: 000, data: 001, vga: 002, ps2: 003, ...
 assign data_we	=(daddr[31:20] == 12'h001)? cpu_we : 1'b0;
 assign vga_we	=(daddr[31:20] == 12'h002)? cpu_we : 1'b0;
-assign gmem_we  =(daddr[31:20] == 12'h006)? cpu_we : 1'b0;
+assign gmem_we	=(daddr[31:20] == 12'h006)? cpu_we : 1'b0;
 assign vga_rollen	=(daddr == 32'h00500000)? cpu_we : 1'b0; // 起始行号寄存器
 assign ascii_or_pixel_we = (daddr == 32'h00500010) ? cpu_we : 1'b0; // CPU要修改ascii_or_pixel控制寄存器
-
+assign ledr_we	=(daddr[31:20] == 12'h009)? cpu_we : 1'b0;
+assign hex_we	=(daddr[31:20] == 12'h00A)? cpu_we : 1'b0;
 // not for CPU
 assign key_rd	=(daddr[31:20] == 12'h003);
 
@@ -123,6 +124,10 @@ always @(*) begin
 		cpu_data = {27'b0, start_line};
 	end else if (daddr == 32'h00500004) begin // 字符颜色寄存器
 		cpu_data = us_cnt;
+	end else if (daddr[31:20] == 12'h007) begin // 开发板开关
+		cpu_data = {31'b0, SW[daddr[3:0]]};
+	end else if (daddr[31:20] == 12'h008) begin // 开发板按键
+		cpu_data = {31'b0, KEY[daddr[1:0]]};
 	end else begin
 		cpu_data = 32'b0;
 	end
@@ -320,20 +325,19 @@ handmade_fifo my_fifo(
 	.wrfull(wrfull)
 );
 
-// for kfifo test
-reg [4:0] kbden_cnt;
-initial kbden_cnt = 5'b0;
-always @ (posedge kbden) begin
-	kbden_cnt <= kbden_cnt + 1;
-end
-assign LEDR[4:0] = kbden_cnt;
-assign LEDR[5] = kbden;
-bcd7seg seg0(keydata[3:0], HEX0);
-bcd7seg seg1(keydata[7:4], HEX1);
-// end of fifo test
+//// for kfifo test
+//reg [4:0] kbden_cnt;
+//initial kbden_cnt = 5'b0;
+//always @ (posedge kbden) begin
+//	kbden_cnt <= kbden_cnt + 1;
+//end
+//assign LEDR[4:0] = kbden_cnt;
+//assign LEDR[5] = kbden;
+//bcd7seg seg0(keydata[3:0], HEX0);
+//bcd7seg seg1(keydata[7:4], HEX1);
+//// end of fifo test
 
 assign keymemout = rdempty ? 8'b0 : kfifodata;
-// assign keymemout = kfifodata;
 
 // CLK
 clkgen #(25000000) my_clk(
@@ -369,6 +373,27 @@ always @(posedge dwrclk) begin
 		ascii_or_pixel <= ddatain[0];
 	end
 end
+
+// HEX and LEDR
+reg [3:0] hex_r[5:0];
+reg [9:0] ledr_r;
+initial begin
+	hex_r[0] = 0; hex_r[1] = 0; hex_r[2] = 0; hex_r[3] = 0; hex_r[4] = 0; hex_r[5] = 0;
+	ledr_r = 0;
+end
+always @ (posedge dwrclk) begin
+	if (ledr_we) ledr[daddr[3:0]] <= ddatain[0];
+end
+always @ (posedge dwrclk) begin
+	if (hex_we) hex[daddr[2:0]] <= ddatain[3:0];
+end
+assign LEDR = ledr_r;
+bcd7seg seg0(hex_r[0], HEX0);
+bcd7seg seg1(hex_r[1], HEX1);
+bcd7seg seg2(hex_r[2], HEX2);
+bcd7seg seg3(hex_r[3], HEX3);
+bcd7seg seg4(hex_r[4], HEX4);
+bcd7seg seg5(hex_r[5], HEX5);
 
 assign cpuclk = clk;
 assign vgaclk = clk;
