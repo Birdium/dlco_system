@@ -46,7 +46,7 @@ void sleep(unsigned tm);
 int get_sw(int index);
 int get_button(int index);
 
-void set_ledr(int index, int status); 
+void set_ledr(int status); 
 void set_hex(int index, int status);
 
 #endif
