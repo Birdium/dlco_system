@@ -330,7 +330,7 @@ void exec_devtest(__attribute__((unused)) const char *cmd) {
         switch (status) {
             case 0: x = get_sw(cnt); kprintf("Get sw No.%d: %d\n", cnt, x); break;
             case 1: x = get_button(cnt); kprintf("Get button No.%d: %d\n", cnt, x); break;
-            case 2: set_ledr(cnt); kprintf("Set ledr: %d\n", cnt, cnt); break;
+            case 2: set_ledr(cnt); kprintf("Set ledr: %d\n", cnt); break;
             case 3: set_hex(cnt, cnt); kprintf("Set Hex No.%d: %d\n", cnt, cnt); break;
             default: break;
         }
