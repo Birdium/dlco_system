@@ -5,21 +5,31 @@
 
 #define VGA(line, ch) vga_start[(((*start_line) + line) << 7) + (ch)]
 
+unsigned* time = (unsigned*) CLK_ADDR;
+unsigned* gmem = (unsigned *)GMEM_ADDR;
 char* vga_start = (char*) VGA_START;
-unsigned*  time = (unsigned*) CLK_ADDR;
-int*  start_line = (int*) LINE_ADDR;
-int*  key  = (int*) KEY_REG;
-int   vga_line=0;
-int   vga_ch=0;
+int* start_line = (int*) LINE_ADDR;
+int* key = (int*) KEY_REG;
+int vga_line=0;
+int vga_ch=0;
 
 unsigned gettimeofday(){
   return *time;
 }
 
-void sleep(int tm) {
-    int cnt = 0;
-    tm *= 10000;
-    while (cnt < tm) cnt ++;
+void draw(int x, int y, unsigned pixel) {
+  gmem[(x << 7) + y] = pixel;
+}
+
+void swtch() {
+  static int ascii_or_pixel = 0;
+  ascii_or_pixel ^= 1;
+  *((int *)0x00500010) = ascii_or_pixel;
+}
+
+void sleep(unsigned tm) {
+    unsigned upt = gettimeofday();
+    while (gettimeofday() - upt > tm);
 }
 
 void vga_init(){
@@ -39,7 +49,7 @@ void vga_roll(){
 
 void blink() {
   static char ch = 0;
-  ch = (!ch) ? 0x5F : 0;
+  ch = (!ch) ? 255 : 0;
   VGA_CUR = ch;
 }
 

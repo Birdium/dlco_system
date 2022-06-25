@@ -13,6 +13,8 @@
 #define LINE_ADDR    0x00500000
 #define COLOR_ADDR   0x00500004
 
+#define GMEM_ADDR    0x00600000
+
 #define KEY_LEFT 180
 #define KEY_RIGH 182
 #define KEY_UP   184
@@ -30,7 +32,9 @@ void vga_roll();
 void blink();
 
 void vga_init(void);
+void swtch();
+void draw(int x, int y, unsigned pixel);
 
-void sleep(int tm);
+void sleep(unsigned tm);
 
 #endif

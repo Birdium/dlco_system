@@ -188,3 +188,26 @@ int main() {
 }
 
 #endif
+
+void exec_gtest(__attribute__((unused))const char *cmd ) {
+    swtch();
+    char key;
+    unsigned col = 0xFF0000;
+    unsigned tm = gettimeofday();
+    while (1) {
+        if ((key = readkey()) == 'q') {
+            swtch();
+            return ;
+        }
+
+        if (gettimeofday() - tm > 1000000) {
+            tm = gettimeofday();
+            if (col == 0xF) {
+                col = 0xF00;
+            } else {
+                col >>= 4;
+            }
+        }
+        draw(15, 15, col);
+    }
+}

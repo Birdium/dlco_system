@@ -1,10 +1,13 @@
 module displayer(
 	input clk,
-	input [9:0] h_addr, v_addr,
-	input [7:0] ascii,
+	input [ 9:0] h_addr, v_addr,
+	input [ 7:0] ascii,
+	input [11:0] pixel,
+	input ascii_or_pixel, // 0 if ascii, 1 if pixel
 	output reg [11:0] data, 
 	output [6:0] vrdaddr_h,
 	output [4:0] vrdaddr_v,
+	output [14:0] gdaddr,
 	output vrdclk
 );
 
@@ -28,6 +31,7 @@ assign scan_x = h_addr / 9;
 assign scan_y = v_addr / 16;
 assign vrdaddr_h = scan_x[6:0];
 assign vrdaddr_v = scan_y[4:0];
+assign gdaddr = {h_addr[9:2], v_addr[8:2]};
 
 assign vrdclk = ~clk;
 assign ch_x = h_addr % 9;
@@ -43,7 +47,10 @@ begin
 //		data <= {12{flash_on}};
 //	end
 //	else 
-	data <= {12{line[ch_x[3:0]]}};
+	if (ascii_or_pixel == 0)
+		data <= {12{line[ch_x[3:0]]}};
+	else
+		data <= pixel;
 end
 
 // no need to write.. tashikani

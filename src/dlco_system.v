@@ -93,26 +93,39 @@ module dlco_system(
 //  REG/WIRE declarations
 //=======================================================
 
-wire [31:0] iaddr, idataout, daddr, ddataout, ddata, ddatain, cpu_data, PC;
+wire [31:0] iaddr, idataout, daddr, ddataout, ddata, ddatain, PC;
 wire [31:0] keymemout;
 wire [2:0] dop;
 wire iclk, drdclk, dwrclk;
 wire cpu_we, data_we, vga_we, vga_rollen, key_rd;
+wire ascii_or_pixel_we;
+
+reg [31:0] cpu_data;
 
 // instr: 000, data: 001, vga: 002, ps2: 003, ...
 assign data_we	=(daddr[31:20] == 12'h001)? cpu_we : 1'b0;
 assign vga_we	=(daddr[31:20] == 12'h002)? cpu_we : 1'b0;
 assign vga_rollen	=(daddr == 32'h00500000)? cpu_we : 1'b0; // 起始行号寄存器
+assign ascii_or_pixel_we = (daddr == 32'h00500010) ? cpu_we : 1'b0; // CPU要修改ascii_or_pixel控制寄存器
 
 // not for CPU
 assign key_rd	=(daddr[31:20] == 12'h003);
 
-assign cpu_data	=
- (daddr[31:20] == 12'h001)? ddataout: // 选取dmem输出
-((daddr[31:20] == 12'h003)? keymemout : // 键盘输出
-((daddr[31:20] == 12'h004)? us_cnt : // 时钟输出
-((daddr == 32'h00500000)? {27'b0, start_line} : // 起始行号寄存器(read only)
-((daddr == 32'h00500004)? us_cnt : 32'b0 )))); // 字符颜色寄存器
+always @(*) begin
+	if (daddr[31:20] == 12'h001) begin // 选取dmem输出
+		cpu_data = ddataout; 
+	end else if (daddr[31:20] == 12'h003) begin // 键盘输出
+		cpu_data = keymemout;
+	end else if (daddr[31:20] == 12'h004) begin // 时钟输出
+		cpu_data = us_cnt;
+	end else if (daddr == 32'h00500000) begin // 起始行号寄存器(read only)
+		cpu_data = {27'b0, start_line};
+	end else if (daddr == 32'h00500004) begin // 字符颜色寄存器
+		cpu_data = us_cnt;
+	end else begin
+		cpu_data = 32'b0;
+	end
+end
 
 // VGA + vmem
 wire [11:0] vga_data;
@@ -120,9 +133,12 @@ wire [9:0] h_addr, v_addr;
 wire [3:0] vga_r, vga_g, vga_b;
 
 wire [7:0] vdataout;
+wire [11:0] gdataout;
 wire [11:0] vrdaddr;
 wire [6:0] vrdaddr_h;
 wire [4:0] vrdaddr_v;
+wire [14:0] gdaddr;
+reg ascii_or_pixel;
 
 // KBD
 reg nextdata_n;
@@ -200,6 +216,18 @@ vmem my_vmem(
 	.q(vdataout)
 );
 
+gmem my_gmem(
+	.data(ddatain[11:0]), // 只有4位*3=12位色，因此只取低地址的12位
+	.rdaddress(gdaddr),  // graphics读地址
+	.rdclock(vrdclk),
+	// 640*512的分辨率，低9位为512，高10位为640
+	// 但是板上资源不够，像素4*4合一，分辨率是160*128，低7位为128，共15位
+	.wraddress(daddr[14:0]), 
+	.wrclock(dwrclk),
+	.wren(vga_we),
+	.q(gdataout)
+);
+
 assign VGA_R = {vga_r, 4'b0};
 assign VGA_G = {vga_g, 4'b0};
 assign VGA_B = {vga_b, 4'b0};
@@ -208,15 +236,20 @@ assign VGA_CLK = vgaclk;
 
 // 非常恐怖啊, 时序问题,,,
 // vgaclk=clk, 在整个时钟周期下降沿displayer会从vmem读入vdataout, 在上升沿输出到vga_data.
+
+// upd: 因为想同时支持字符界面和图形界面, 因此需要MUX出vdataout和gdataout, 这部分在displayer里面魔改
 displayer my_displayer(
 	.clk(vgaclk),
 	.ascii(vdataout), // read from vmem
+	.pixel(gdataout), // read from gmem
+	.ascii_or_pixel(ascii_or_pixel), // MUX (0->ascii, 1->pixel)
 	.h_addr(h_addr),
 	.v_addr(v_addr),
 	.data(vga_data),
 	.vrdclk(vrdclk), // let VGA tell vmem when to read
 	.vrdaddr_h(vrdaddr_h),
-	.vrdaddr_v(vrdaddr_v)
+	.vrdaddr_v(vrdaddr_v),
+	.gdaddr(gdaddr)
 );
 
 vga_ctrl vga_inst(
@@ -330,6 +363,9 @@ end
 always @(posedge dwrclk) begin
 	if (vga_rollen) begin
 		start_line <= ddatain[4:0];
+	end
+	if (ascii_or_pixel_we) begin
+		ascii_or_pixel <= ddatain[0];
 	end
 end
 

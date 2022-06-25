@@ -31,7 +31,7 @@ static int prev(int x) {
     exec_##str(cmd + sizeof(#str)); \
     return 0; }
 #define CMD_DEF( str) void exec_##str(const char *cmd);
-#define COMMANDS(_) _(echo) _(fib) _(eval) _(clear)
+#define COMMANDS(_) _(echo) _(fib) _(eval) _(clear) _(gtest)
 
 COMMANDS(CMD_DEF)
 
