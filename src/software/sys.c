@@ -41,7 +41,7 @@ void swtch() {
 
 void sleep(unsigned tm) {
     unsigned upt = gettimeofday();
-    while (gettimeofday() - upt > tm);
+    while (gettimeofday() - upt <= tm);
 }
 
 void vga_init(){

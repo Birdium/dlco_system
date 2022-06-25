@@ -2418,7 +2418,7 @@ Disassembly of section .text:
     2438:	fec42783          	lw	a5,-20(s0)
     243c:	40f707b3          	sub	a5,a4,a5
     2440:	fdc42703          	lw	a4,-36(s0)
-    2444:	fef766e3          	bltu	a4,a5,2430 <sleep+0x20>
+    2444:	fef776e3          	bgeu	a4,a5,2430 <sleep+0x20>
     2448:	00000013          	nop
     244c:	02c12083          	lw	ra,44(sp)
     2450:	02812403          	lw	s0,40(sp)
