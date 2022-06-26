@@ -31,11 +31,7 @@ static int prev(int x) {
     exec_##str(cmd + sizeof(#str)); \
     return 0; }
 #define CMD_DEF( str) void exec_##str(const char *cmd);
-<<<<<<< HEAD
-#define COMMANDS(_) _(echo) _(fib) _(eval) _(clear) _(gtest) _(vtest) _(devtest) _(time)
-=======
-#define COMMANDS(_) _(echo) _(fib) _(eval) _(clear) _(gtest) _(vtest) _(benchmark)
->>>>>>> jjppp
+#define COMMANDS(_) _(echo) _(fib) _(eval) _(clear) _(gtest) _(vtest) _(devtest) _(time) _(benchmark)
 
 COMMANDS(CMD_DEF)
 
