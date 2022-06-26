@@ -166,7 +166,7 @@ assign rst = SW[0];
 // CPU
 // 下降沿写, 上升沿读
 				
-rv32is my_rv32is( // in out 是相对于rv32is来说的
+rv32is_pipe2 my_rv32is( // in out 是相对于rv32is来说的
 	.clock(cpuclk),
 	.reset(rst),
 	.imemaddr(iaddr),
