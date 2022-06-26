@@ -32,7 +32,7 @@ module pipe_reg(
         internal_ALUout <= in_ALUout;
         internal_busB <= in_busB;
         internal_MemOp <= in_MemOp;
-        internal_rd <= in_rd;
+        internal_rd <= in_rd & {5{in_RegWr}};
         internal_MemtoReg <= in_MemtoReg;
         internal_RegWr <= in_RegWr;
         internal_MemWr <= in_MemWr;
