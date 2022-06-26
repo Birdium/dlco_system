@@ -191,7 +191,6 @@ int main() {
 
 void exec_gtest(__attribute__((unused))const char *cmd ) {
     swtch();
-    char key;
     unsigned col = 0xFF0000;
     unsigned tm = gettimeofday();
     draw(0, 0, 0xF); draw(0, 1, 0xF); draw(0, 2, 0xF); draw(0, 3, 0xF);
@@ -202,7 +201,7 @@ void exec_gtest(__attribute__((unused))const char *cmd ) {
     draw(5, 0, 0xF); draw(5, 1, 0xF); draw(5, 2, 0xF); draw(5, 3, 0xF);
     int i = 0, j = 0;
     while (1) {
-        if ((key = readkey()) == 'q') {
+        if (readkey()) {
             swtch();
             return ;
         }
@@ -223,7 +222,7 @@ void exec_gtest(__attribute__((unused))const char *cmd ) {
     }
 }
 
-#define FPS 30
+#define FPS 15
 #define N   32
 
 static inline unsigned pixel(unsigned r, unsigned g, unsigned b) {
@@ -303,7 +302,7 @@ void exec_vtest(__attribute__((unused)) const char *cmd) {
 
   while (1) {
     unsigned upt = gettimeofday() / 1000;
-    if (readkey() == 'q') {
+    if (readkey()) {
         swtch();
         return ;
     }

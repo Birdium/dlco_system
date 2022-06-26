@@ -17,14 +17,11 @@ reg flash_on;
 wire [9:0] scan_x, scan_y;
 wire [3:0] ch_x;
 wire [11:0] ch_y, line;
-reg [6:0] cur_x, cur_y;
 
 initial
 begin
 	$readmemh("vga_font.txt", vga_font, 0, 4095);
 	flash_on = 0;
-	cur_x = 7'h2;
-	cur_y = 7'h0; // 可能还需要一个寄存器来指示光标位置
 end
 
 assign scan_x = h_addr / 9;
