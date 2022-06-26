@@ -12,6 +12,10 @@ int* start_line = (int*) LINE_ADDR;
 int* key = (int*) KEY_REG;
 int vga_line=0;
 int vga_ch=0;
+char* sw = (char*) SW_ADDR;
+char* button = (char*) BUTTON_ADDR;
+int* ledr = (int*) LEDR_ADDR;
+char* hex = (char*) HEX_ADDR;
 
 unsigned gettimeofday(){
   return *time;
@@ -37,7 +41,7 @@ void swtch() {
 
 void sleep(unsigned tm) {
     unsigned upt = gettimeofday();
-    while (gettimeofday() - upt > tm);
+    while (gettimeofday() - upt <= tm);
 }
 
 void vga_init(){
@@ -110,4 +114,22 @@ void putstr(const char *str){
 
 char readkey() {
   return (char)(*key);
+}
+
+int get_sw(int index){
+    if (index >= 0 && index < 10) return sw[index];
+    else return -1;
+}
+
+int get_button(int index){
+    if (index >= 0 && index < 4) return button[index];
+    else return -1;
+}
+
+void set_ledr(int status) {
+    (*ledr) = status;
+}
+
+void set_hex(int index, int status) {
+    if (index >= 0 && index < 6) hex[index] = status;
 }

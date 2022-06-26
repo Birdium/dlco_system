@@ -321,3 +321,30 @@ void exec_vtest(__attribute__((unused)) const char *cmd) {
   }
 }
 
+void exec_devtest(__attribute__((unused)) const char *cmd) {
+    int status = 0;
+    int cnt = 0;
+    while (1) {
+        int x = 0;
+        switch (status) {
+            case 0: x = get_sw(cnt); kprintf("Get sw No.%d: %d\n", cnt, x); break;
+            case 1: x = get_button(cnt); kprintf("Get button No.%d: %d\n", cnt, x); break;
+            case 2: set_ledr(cnt); kprintf("Set ledr: %d\n", cnt); break;
+            case 3: set_hex(cnt, cnt); kprintf("Set Hex No.%d: %d\n", cnt, cnt); break;
+            default: break;
+        }
+        cnt = (cnt+1) % 4;
+        sleep(1000000);
+        int key = readkey();
+        if (key == 'q') status = 0; 
+        else if (key == 'w') status = 1; 
+        else if (key == 'e') status = 2; 
+        else if (key == 'r') status = 3; 
+        else if (key == 'z') return;
+    }
+}
+
+void exec_time(__attribute__((unused))const char *cmd){
+    kprintf("%u\n", gettimeofday());
+    return;
+}

@@ -15,6 +15,11 @@
 
 #define GMEM_ADDR    0x00600000
 
+#define SW_ADDR      0x00700000
+#define BUTTON_ADDR  0x00800000
+#define LEDR_ADDR    0x00900000
+#define HEX_ADDR     0x00a00000
+
 #define KEY_LEFT 180
 #define KEY_RIGH 182
 #define KEY_UP   184
@@ -37,5 +42,11 @@ void draw(int x, int y, unsigned pixel);
 void draw_rect(int x, int y, unsigned buf[], int w, int h);
 
 void sleep(unsigned tm);
+
+int get_sw(int index);
+int get_button(int index);
+
+void set_ledr(int status); 
+void set_hex(int index, int status);
 
 #endif
