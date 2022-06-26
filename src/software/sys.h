@@ -21,6 +21,7 @@
 #define KEY_DW   178
 #define BACKSPACE 8
 #define ENTER 13
+#define NULL ((void *)0)
 
 void putstr(const char* str);
 void putch(char ch);
